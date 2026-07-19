@@ -4,19 +4,13 @@ import { TRANSLATIONS } from '../data/translations';
 import { Share2, Copy, Check, Download, QrCode as QrIcon, MapPin, Smartphone, ChevronRight } from 'lucide-react';
 
 export const QrCodeShare: React.FC = () => {
-  const { settings } = useStore();
+  const { settings, currentUser, getStoreUrl } = useStore();
   const t = TRANSLATIONS[settings.language];
 
   const [copied, setCopied] = useState(false);
 
-  // Generate the customer storefront shareable link dynamically
-  const getCustomerStoreUrl = () => {
-    const origin = window.location.origin;
-    // Embed the specific view as a query param so that scanning visitors land on the catalog directly.
-    return `${origin}?view=customer`;
-  };
-
-  const storeUrl = getCustomerStoreUrl();
+  // Generate the customer storefront shareable link dynamically using the new subdomain format
+  const storeUrl = getStoreUrl(currentUser);
 
   // Generate QR Code URL via QRServer API (reliable, fast, client-side, offline-compatible)
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(storeUrl)}&margin=10`;

@@ -25,25 +25,47 @@ interface StoreContextType {
   registerUser: (userData: any) => Promise<{ success: boolean; error?: string }>;
   loginUser: (userData: any) => Promise<{ success: boolean; error?: string }>;
   logoutUser: () => void;
+  getStoreUrl: (username: string | null) => string;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
+// Define the base platform domain
+const BASE_DOMAIN = 'subdomain.mydomain.com';
+
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [view, setView] = useState<AppView>(() => {
+    const hostname = window.location.hostname;
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('view');
+    
+    // Check if we are on a user subdomain: username.subdomain.mydomain.com
+    if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
+      return 'customer';
+    }
+
     if (mode === 'customer') return 'customer';
     return 'landing';
   });
+
+  // Extract username from hostname if on subdomain
+  const getSubdomainUsername = () => {
+    const hostname = window.location.hostname;
+    if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
+      return hostname.replace(`.${BASE_DOMAIN}`, '');
+    }
+    return null;
+  };
   
   // Load initial state from localStorage
   const [products, setProducts] = useState<Product[]>(() => {
+    if (getSubdomainUsername()) return []; // Will load from server
     const saved = localStorage.getItem('quickstore_products');
     return saved ? JSON.parse(saved) : [];
   });
 
   const [settings, setSettings] = useState<StoreSettings>(() => {
+    if (getSubdomainUsername()) return { ...DEFAULT_SETTINGS, storeId: '' }; // Will load from server
     const saved = localStorage.getItem('quickstore_settings');
     const parsed = saved ? JSON.parse(saved) : { ...DEFAULT_SETTINGS };
     if (!parsed.storeId) {
@@ -62,6 +84,24 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [adminUsername, setAdminUsername] = useState<string>('aymaansamy96');
 
   const [cart, setCart] = useState<CartItem[]>([]);
+
+  // Load store data from server if on a subdomain
+  useEffect(() => {
+    const subdomainUser = getSubdomainUsername();
+    if (subdomainUser) {
+      fetch(`/api/store/by-username?username=${subdomainUser}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.settings) {
+            setSettings(data.settings);
+            if (data.products) {
+              setProducts(data.products);
+            }
+          }
+        })
+        .catch(err => console.error('Error loading store by subdomain:', err));
+    }
+  }, []);
 
   // Fetch admin and bot info on mount
   useEffect(() => {
@@ -243,6 +283,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setView('landing');
   };
 
+  // URL Helper for store
+  const getStoreUrl = (username: string | null) => {
+    if (username) {
+      return `https://${username}.${BASE_DOMAIN}`;
+    }
+    // Fallback if no username provided (e.g. for preview before login)
+    return `${window.location.origin}?view=customer`;
+  };
+
   // Demo loader
   const loadDemoData = () => {
     setProducts(SAMPLE_PRODUCTS);
@@ -406,7 +455,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       getWhatsAppLink,
       registerUser,
       loginUser,
-      logoutUser
+      logoutUser,
+      getStoreUrl
     }}>
       {children}
     </StoreContext.Provider>
