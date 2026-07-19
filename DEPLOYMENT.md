@@ -1,48 +1,44 @@
-# 🚀 Deploying to Render
+# 🚀 Deploying to Vercel
 
-This full-stack application (Vite/React frontend + Express/Node.js backend) is fully prepared for hosting on [Render](https://render.com).
+This full-stack application (Vite/React frontend + Express/Node.js backend) is prepared for hosting on [Vercel](https://vercel.com).
 
-We have included a `render.yaml` Blueprint file at the root of the project which automates the setup. Follow the instructions below to deploy your app in under 5 minutes.
+We have included a `vercel.json` configuration file at the root of the project to handle the routing between the frontend and the Express backend.
 
 ---
 
 ## 📋 Steps to Deploy
 
 ### 1. Push Code to GitHub / GitLab
-Make sure this codebase is pushed to a Git repository on **GitHub** or **GitLab** so Render can access it.
+Make sure this codebase is pushed to a Git repository on **GitHub** or **GitLab** so Vercel can access it.
 
-### 2. Deploy via Render Blueprint (Recommended)
-1. Log in to [Render Dashboard](https://dashboard.render.com).
-2. Click **New +** in the top right and select **Blueprint**.
-3. Connect your GitHub/GitLab repository.
-4. Render will automatically detect the `render.yaml` file.
-5. Provide the required Environment Variables in the UI prompt:
+### 2. Deploy via Vercel Dashboard
+1. Log in to [Vercel Dashboard](https://vercel.com/dashboard).
+2. Click **Add New** and select **Project**.
+3. Import your GitHub/GitLab repository.
+4. Vercel will automatically detect the project settings.
+5. **Environment Variables:** Provide the required variables in the Vercel project settings:
    - `TELEGRAM_BOT_TOKEN`
    - `TELEGRAM_CHAT_ID`
    - `TELEGRAM_ADMIN_USERNAME`
-   - *(Optional)* Firebase credentials (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`) if using Firestore for live cloud storage instead of local JSON file database fallback.
-6. Click **Approve** or **Deploy**. Render will build and start your application automatically!
+   - `VERCEL` = `1` (Automatically set by Vercel, but used in our code)
+   - *(Optional)* Firebase credentials (`FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`) if using Firestore for live cloud storage.
+6. Click **Deploy**. Vercel will build and start your application!
 
 ---
 
-### 🛠️ Manual Deployment Option
-If you prefer to configure the Web Service manually on Render:
-1. Click **New +** and select **Web Service**.
-2. Connect your repository.
-3. Configure the following settings:
-   - **Language / Runtime:** `Node`
-   - **Build Command:** `npm install && npm run build`
-   - **Start Command:** `npm run start`
-4. Under **Advanced**, add the following environment variables:
-   - `NODE_ENV` = `production`
-   - `PORT` = `3000`
-   - `TELEGRAM_BOT_TOKEN` = *(Your token)*
-   - `TELEGRAM_CHAT_ID` = *(Your chat ID)*
-   - `TELEGRAM_ADMIN_USERNAME` = *(Your admin username)*
-   - *(Optional for Firestore database)*:
-     - `FIREBASE_PROJECT_ID`
-     - `FIREBASE_CLIENT_EMAIL`
-     - `FIREBASE_PRIVATE_KEY` *(make sure to copy the entire key including `-----BEGIN PRIVATE KEY-----` and `-----END PRIVATE KEY-----`)*
+### ⚠️ Note on Telegram Bot
+Since Vercel uses a **Serverless environment**, the built-in **Telegram Long Polling** service is disabled in production to prevent execution timeouts and high costs. 
+
+For the Telegram bot to function on Vercel, you should:
+1. **Use Webhooks:** Refactor the bot logic to use Webhooks instead of Long Polling.
+2. **Alternative Hosting:** Use a traditional VPS or PaaS like Render/Railway if you require the Long Polling background service to run 24/7.
+
+---
+
+### 🛠️ Local Development
+To test the production build locally as if it were on Vercel:
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run `vercel dev`
 
 ---
 

@@ -382,7 +382,13 @@ async function startServer() {
   });
 
   // Start Telegram Bot Long Polling
-  startTelegramLongPolling();
+  if (!(process.env.NODE_ENV === "production" && process.env.VERCEL)) {
+    startTelegramLongPolling();
+  } else {
+    console.log("Running on Vercel - Telegram Long Polling disabled (serverless environment).");
+  }
+
+  return app;
 }
 
 // Telegram Bot Long Polling Logic
@@ -582,4 +588,9 @@ function startTelegramLongPolling() {
   poll();
 }
 
-startServer();
+// For Vercel / Serverless, we export the app
+const appPromise = startServer();
+export default async (req: any, res: any) => {
+  const app = await appPromise;
+  app(req, res);
+};
