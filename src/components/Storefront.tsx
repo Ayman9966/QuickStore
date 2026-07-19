@@ -200,25 +200,25 @@ export const Storefront: React.FC = () => {
       <header className={`sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors border-b ${
         darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'
       }`}>
-        <div className="max-w-6xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             {/* Store logo */}
             {settings.logoUrl ? (
               <img 
                 src={settings.logoUrl} 
                 alt={settings.storeName}
-                className="w-12 h-12 sm:w-10 sm:h-10 rounded-2xl sm:rounded-xl object-cover border border-slate-200 shadow-sm shrink-0"
+                className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-sm shrink-0"
               />
             ) : (
-              <div className="w-12 h-12 sm:w-10 sm:h-10 rounded-2xl sm:rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-sm shrink-0 select-none">
-                <ShoppingBag className="w-6 h-6 sm:w-5 sm:h-5" />
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-sm shrink-0 select-none">
+                <ShoppingBag className="w-5 h-5" />
               </div>
             )}
-            <div className="flex flex-col items-center sm:items-start">
-              <h1 className={`font-black tracking-tight text-lg sm:text-lg leading-tight ${
+            <div>
+              <h1 className={`font-black tracking-tight text-base sm:text-lg ${
                 darkMode ? 'text-white' : 'text-slate-950'
               }`}>{settings.storeName}</h1>
-              <p className={`text-xs sm:text-xs font-bold whitespace-nowrap ${
+              <p className={`text-[10px] sm:text-xs font-semibold ${
                 darkMode ? 'text-slate-400' : 'text-slate-500'
               }`}>
                 {settings.businessType === 'food' ? '🍽️ Cafe & Bistro' : '🛍️ Retail Outlet'}
@@ -226,12 +226,12 @@ export const Storefront: React.FC = () => {
             </div>
           </div>
 
-          {/* Desktop Quick Controls - Hidden on mobile */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          {/* Quick Controls */}
+          <div className="flex items-center gap-2.5">
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className={`p-3 rounded-xl border transition-colors flex items-center gap-1.5 text-sm font-bold cursor-pointer ${
+              className={`p-2.5 sm:p-3 rounded-xl border transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold ${
                 darkMode 
                   ? 'border-slate-800 hover:bg-slate-800 text-slate-300' 
                   : 'border-slate-200 hover:bg-slate-100 text-slate-750'
@@ -239,7 +239,7 @@ export const Storefront: React.FC = () => {
               title="Change Language"
             >
               <Globe className="w-4.5 h-4.5 text-amber-500" />
-              <span>{settings.language === 'en' ? 'العربية' : 'English'}</span>
+              <span className="hidden sm:inline">{settings.language === 'en' ? 'العربية' : 'English'}</span>
             </button>
 
             {/* View Mode Toggle */}
@@ -248,7 +248,7 @@ export const Storefront: React.FC = () => {
             }`}>
               <button
                 onClick={() => setViewMode('cards')}
-                className={`p-2.5 rounded-lg transition-all cursor-pointer ${
+                className={`p-2 rounded-lg transition-all ${
                   settings.viewMode === 'cards'
                     ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
                     : 'text-slate-500 hover:text-slate-700'
@@ -259,7 +259,7 @@ export const Storefront: React.FC = () => {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2.5 rounded-lg transition-all cursor-pointer ${
+                className={`p-2 rounded-lg transition-all ${
                   settings.viewMode === 'list'
                     ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
                     : 'text-slate-400 hover:text-slate-500'
@@ -273,7 +273,7 @@ export const Storefront: React.FC = () => {
             {/* Dark Mode toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`p-3 rounded-xl border transition-colors cursor-pointer ${
+              className={`p-2.5 sm:p-3 rounded-xl border transition-colors cursor-pointer ${
                 darkMode 
                   ? 'border-slate-800 hover:bg-slate-800 text-amber-400' 
                   : 'border-slate-200 hover:bg-slate-100 text-slate-650'
@@ -286,9 +286,9 @@ export const Storefront: React.FC = () => {
             <button
               onClick={() => setCartOpen(true)}
               style={{ backgroundColor: settings.primaryColor }}
-              className="text-white p-3 rounded-xl shadow-md font-extrabold flex items-center gap-1.5 cursor-pointer relative shrink-0 transition-opacity hover:opacity-90 min-w-[44px] min-h-[44px] justify-center"
+              className="text-white p-2.5 sm:p-3 rounded-xl shadow-md font-extrabold flex items-center gap-1.5 cursor-pointer relative shrink-0 transition-opacity hover:opacity-90"
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-4.5 h-4.5" />
               {cartCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white ring-1 ring-red-500/10">
                   {cartCount}
@@ -600,65 +600,6 @@ export const Storefront: React.FC = () => {
           )
         )}
       </main>
-
-      {/* Mobile Bottom Toolbar */}
-      <div className={`sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t pb-safe backdrop-blur-lg shadow-[0_-10px_30px_rgba(0,0,0,0.05)] transition-colors ${
-        darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'
-      }`}>
-        <div className="flex items-center justify-around p-3">
-          {/* Language Toggle */}
-          <button
-            onClick={toggleLanguage}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[44px] justify-center ${
-              darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            <Globe className="w-5 h-5 text-amber-500" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">{settings.language === 'en' ? 'Ar' : 'En'}</span>
-          </button>
-
-          {/* View Mode Toggle */}
-          <button
-            onClick={() => setViewMode(settings.viewMode === 'cards' ? 'list' : 'cards')}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[44px] justify-center ${
-              darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            {settings.viewMode === 'cards' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
-            <span className="text-[10px] font-bold uppercase tracking-widest">{settings.viewMode === 'cards' ? 'List' : 'Grid'}</span>
-          </button>
-
-          {/* Dark Mode toggle */}
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[44px] justify-center ${
-              darkMode ? 'text-amber-400' : 'text-slate-500'
-            }`}
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            <span className="text-[10px] font-bold uppercase tracking-widest">{darkMode ? 'Light' : 'Dark'}</span>
-          </button>
-
-          {/* Cart Button */}
-          <button
-            onClick={() => setCartOpen(true)}
-            className="flex flex-col items-center gap-1 p-2 rounded-xl transition-all active:scale-95 min-h-[44px] min-w-[44px] justify-center relative"
-          >
-            <div 
-              style={{ backgroundColor: settings.primaryColor }}
-              className="p-2.5 rounded-full text-white shadow-lg shadow-amber-500/20"
-            >
-              <ShoppingBag className="w-5 h-5" />
-            </div>
-            {cartCount > 0 && (
-              <span className="absolute top-2 right-4 bg-red-500 text-white text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border-2 border-white">
-                {cartCount}
-              </span>
-            )}
-            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: settings.primaryColor }}>Cart</span>
-          </button>
-        </div>
-      </div>
 
       {/* Floating Active Toast Notification */}
       <AnimatePresence>
