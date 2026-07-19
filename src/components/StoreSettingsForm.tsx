@@ -64,7 +64,7 @@ export const StoreSettingsForm: React.FC = () => {
           
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <Save className="w-4 h-4" />
             {t.saveSettingsBtn}
@@ -189,13 +189,13 @@ export const StoreSettingsForm: React.FC = () => {
               </label>
               
               {/* Preset Palette Circular select */}
-              <div className="grid grid-cols-3 gap-2.5 mb-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3.5">
                 {PRESET_COLORS.map((col) => (
                   <button
                     key={col.hex}
                     type="button"
                     onClick={() => setPrimaryColor(col.hex)}
-                    className={`p-2.5 rounded-xl border text-xs font-semibold flex items-center justify-start gap-2 cursor-pointer transition-all ${
+                    className={`p-3.5 sm:p-2.5 rounded-xl border text-sm sm:text-xs font-semibold flex items-center justify-start gap-2 cursor-pointer transition-all active:scale-95 ${
                       primaryColor === col.hex
                         ? 'border-slate-900 bg-slate-50 ring-2 ring-slate-900/5 shadow-sm'
                         : 'border-slate-200 bg-white hover:border-slate-300'
@@ -244,14 +244,14 @@ export const StoreSettingsForm: React.FC = () => {
                       key={logo.name}
                       type="button"
                       onClick={() => setLogoUrl(logo.url)}
-                      className={`p-2 rounded-xl border text-left flex items-center gap-2.5 cursor-pointer transition-all ${
+                      className={`p-3.5 sm:p-2 rounded-xl border text-left flex items-center gap-2.5 cursor-pointer transition-all active:scale-95 ${
                         logoUrl === logo.url
                           ? 'border-amber-500 bg-amber-50/25'
                           : 'border-slate-200 hover:border-slate-300'
                       }`}
                     >
                       <img src={logo.url} alt={logo.name} className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0" />
-                      <span className="text-xs text-slate-700 font-semibold truncate">{logo.name}</span>
+                      <span className="text-sm sm:text-xs text-slate-700 font-semibold truncate">{logo.name}</span>
                     </button>
                   ))}
                 </div>

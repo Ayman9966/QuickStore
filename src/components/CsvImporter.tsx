@@ -178,23 +178,23 @@ export const CsvImporter: React.FC = () => {
               <p className="text-xs text-slate-400 mt-0.5">Please check everything looks right before adding to store database.</p>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
               <button
                 onClick={() => setParsedItems([])}
-                className="flex-1 sm:flex-initial text-slate-500 hover:text-rose-600 font-medium text-xs px-3 py-2 border border-slate-250 rounded-xl transition-all"
+                className="flex-1 sm:flex-initial text-slate-600 dark:text-slate-350 hover:text-rose-600 font-semibold text-sm sm:text-xs px-5 py-3 sm:px-4 sm:py-2 border border-slate-250 rounded-xl transition-all cursor-pointer text-center"
               >
                 Clear Preview
               </button>
               <button
                 onClick={() => handleSaveImport(false)}
-                className="flex-1 sm:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm shadow-amber-500/10 flex items-center justify-center gap-1.5"
+                className="flex-1 sm:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-xs px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all shadow-sm shadow-amber-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Check className="w-4 h-4" />
                 {t.saveImportedBtn}
               </button>
               <button
                 onClick={() => handleSaveImport(true)}
-                className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
+                className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm sm:text-xs px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
                 {t.overwriteImportedBtn}

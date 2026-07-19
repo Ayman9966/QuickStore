@@ -95,11 +95,11 @@ export const Dashboard: React.FC = () => {
 
       {/* Upgrade Banner for Unpaid Users */}
       {!settings.isSubscribed ? (
-        <div className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 text-white py-4 px-4 shadow-sm text-center text-xs sm:text-sm font-bold flex flex-col items-center justify-center gap-3">
-          <div className="flex flex-col sm:flex-row items-center gap-2 justify-center">
-            <div className="flex items-center gap-1.5 justify-center">
-              <Sparkles className="w-4 h-4 text-amber-200 shrink-0" />
-              <span>
+        <div className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 text-white py-4.5 px-4 shadow-sm text-center text-xs sm:text-sm font-bold flex flex-col items-center justify-center gap-3.5">
+          <div className="flex flex-col sm:flex-row items-center gap-2.5 justify-center">
+            <div className="flex items-center gap-2 justify-center">
+              <Sparkles className="w-4.5 h-4.5 text-amber-200 shrink-0" />
+              <span className="leading-relaxed">
                 {isRtl 
                   ? "⚠️ تنبيه: أنت في الخطة المجانية. يتم عرض منتجين لكل قسم، 4 صور بحد أقصى وقسمين فقط للعملاء." 
                   : "⚠️ Notice: You are on the Free Plan. Customers only see 2 products per category, 4 images and 2 pages max."}
@@ -107,7 +107,7 @@ export const Dashboard: React.FC = () => {
             </div>
             
             {/* Store ID copy badge inside banner */}
-            <div className="bg-black/20 px-2.5 py-1 rounded-lg flex items-center gap-2 text-white border border-white/10 text-xs">
+            <div className="bg-black/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-white border border-white/10 text-xs">
               <span>{isRtl ? "معرّف متجرك:" : "Store ID:"}</span>
               <code className="font-mono font-bold text-amber-200">{settings.storeId || 'N/A'}</code>
               <button
@@ -115,21 +115,21 @@ export const Dashboard: React.FC = () => {
                   navigator.clipboard.writeText(settings.storeId || '');
                   alert(isRtl ? '📋 تم نسخ معرّف المتجر بنجاح!' : '📋 Store ID copied successfully!');
                 }}
-                className="underline hover:text-amber-100 cursor-pointer"
+                className="underline hover:text-amber-100 cursor-pointer px-1 py-0.5"
               >
                 {isRtl ? "نسخ" : "Copy"}
               </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 w-full">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 w-full max-w-lg sm:max-w-none">
             <button
               onClick={() => {
                 updateSettings({ isSubscribed: true });
               }}
-              className="bg-white text-orange-700 hover:bg-orange-50 font-black text-[11px] px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+              className="bg-white text-orange-700 hover:bg-orange-50 font-black text-sm sm:text-[11px] px-5 py-3 sm:px-4 sm:py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <Sparkles className="w-4 h-4 text-amber-500" />
               <span>{isRtl ? "ترقية فورية تجريبية ($15) 🚀" : "Instant Upgrade Demo ($15) 🚀"}</span>
             </button>
 
@@ -137,9 +137,9 @@ export const Dashboard: React.FC = () => {
               href={`https://t.me/${adminUsername}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#229ED9] hover:bg-[#1a85b8] text-white font-black text-[11px] px-4 py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border border-white/10"
+              className="bg-[#229ED9] hover:bg-[#1a85b8] text-white font-black text-sm sm:text-[11px] px-5 py-3 sm:px-4 sm:py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 border border-white/10"
             >
-              <svg className="w-3.5 h-3.5 fill-current shrink-0" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.15-.3.3-.45.45l-4.71 4.71c-.1.1-.1.25 0 .35l1.83 1.83c.1.1.25.1.35 0l4.71-4.71c.15-.15.3-.3.45-.45.2-.2.2-.5 0-.7-.2-.2-.5-.2-.7 0zm-7.93 5.4l1.83 1.83c.1.1.1.25 0 .35l-1.3 1.3c-.1.1-.25.1-.35 0l-1.83-1.83c-.1-.1-.1-.25 0-.35l1.3-1.3c.1-.1.25-.1.35 0z" />
               </svg>
               <span>{isRtl ? `تواصل مع مدير المنصة لتفعيل المتجر مباشرة 💬` : `Chat with Admin directly to activate 💬`}</span>
@@ -147,29 +147,29 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-emerald-500 text-white py-3.5 px-4 shadow-sm text-center text-xs font-bold flex flex-col sm:flex-row items-center justify-center gap-3">
-          <div className="flex items-center gap-1.5 justify-center">
-            <Sparkles className="w-4 h-4 text-emerald-200 shrink-0" />
-            <span>
+        <div className="bg-emerald-500 text-white py-4.5 px-4 shadow-sm text-center text-xs sm:text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <div className="flex items-center gap-2 justify-center">
+            <Sparkles className="w-4.5 h-4.5 text-emerald-200 shrink-0" />
+            <span className="leading-relaxed">
               {isRtl 
                 ? "🌟 تهانينا! متجرك مشترك في الخطة الاحترافية ومفعل بالكامل لجميع الزوار." 
                 : "🌟 Congratulations! Your store is subscribed to the Pro Plan and fully unlocked for all visitors."}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto max-w-md sm:max-w-none">
             <a
               href={`https://t.me/${adminUsername}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 flex items-center gap-1"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm sm:text-xs font-black px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               <span>{isRtl ? "تواصل مع مدير المنصة على تيليجرام 💬" : "Contact Platform Admin on Telegram 💬"}</span>
             </a>
 
             <button
               onClick={() => updateSettings({ isSubscribed: false })}
-              className="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0"
+              className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-xs font-black px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all cursor-pointer"
             >
               {isRtl ? "تنزيل للخطة المجانية للاختبار" : "Downgrade to Free for testing"}
             </button>
@@ -184,34 +184,34 @@ export const Dashboard: React.FC = () => {
         <div className="lg:col-span-8 flex flex-col gap-6">
           
           {/* Quick Analytics Counters */}
-          <div className="grid grid-cols-3 gap-4 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm">
-            <div className="flex items-center gap-3 pl-2">
-              <div className="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0">
-                <Package className="w-5 h-5" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm">
+            <div className="flex items-center gap-3 pl-2 py-1.5">
+              <div className="w-11 h-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center shrink-0">
+                <Package className="w-5.5 h-5.5" />
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Products</span>
-                <span className="font-extrabold text-base sm:text-lg text-slate-900 leading-none">{totalProducts}</span>
+                <span className="font-extrabold text-lg sm:text-xl text-slate-900 leading-none">{totalProducts}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 border-x border-slate-100 px-4">
-              <div className="w-10 h-10 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0">
-                <Layers className="w-5 h-5" />
+            <div className="flex items-center gap-3 border-y sm:border-y-0 sm:border-x border-slate-100 py-3 sm:py-1.5 sm:px-4">
+              <div className="w-11 h-11 bg-teal-50 text-teal-600 rounded-xl flex items-center justify-center shrink-0">
+                <Layers className="w-5.5 h-5.5" />
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Categories</span>
-                <span className="font-extrabold text-base sm:text-lg text-slate-900 leading-none">{totalCategories}</span>
+                <span className="font-extrabold text-lg sm:text-xl text-slate-900 leading-none">{totalCategories}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 pl-2">
-              <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
-                <DollarSign className="w-5 h-5" />
+            <div className="flex items-center gap-3 pl-2 py-1.5">
+              <div className="w-11 h-11 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                <DollarSign className="w-5.5 h-5.5" />
               </div>
               <div>
                 <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Currency</span>
-                <span className="font-extrabold text-base sm:text-lg text-slate-900 leading-none">{settings.currencySymbol}</span>
+                <span className="font-extrabold text-lg sm:text-xl text-slate-900 leading-none">{settings.currencySymbol}</span>
               </div>
             </div>
           </div>

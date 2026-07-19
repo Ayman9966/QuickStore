@@ -111,15 +111,15 @@ export const CatalogManager: React.FC = () => {
         </div>
 
         {/* Categories Pills */}
-        <div className="flex gap-1.5 overflow-x-auto w-full md:w-auto py-1 no-scrollbar scroll-smooth">
+        <div className="flex gap-2 overflow-x-auto w-full md:w-auto py-1 no-scrollbar scroll-smooth">
           {uniqueCategories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-4 py-2.5 sm:px-3.5 sm:py-1.5 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/10'
-                  : 'bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100'
+                  : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
               {cat === 'All' ? t.categoryAll : cat}
@@ -131,7 +131,7 @@ export const CatalogManager: React.FC = () => {
         <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
           <button
             onClick={handleOpenAddForm}
-            className="flex-1 md:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-sm shadow-amber-500/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 md:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-xs px-5 py-3 sm:py-2.5 rounded-xl shadow-sm shadow-amber-500/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             {t.addProductBtn}
@@ -144,7 +144,7 @@ export const CatalogManager: React.FC = () => {
                   clearCatalog();
                 }
               }}
-              className="px-3 py-2.5 border border-rose-100 hover:bg-rose-50 rounded-xl text-rose-600 text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
+              className="px-4 py-3 sm:py-2.5 border border-rose-100 hover:bg-rose-50 rounded-xl text-rose-600 text-sm sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
               Clear
@@ -198,9 +198,9 @@ export const CatalogManager: React.FC = () => {
               <div className="p-4 pt-0 border-t border-slate-50 flex items-center gap-2">
                 <button
                   onClick={() => handleOpenEditForm(prod)}
-                  className="flex-1 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold text-xs py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                  className="flex-1 border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-sm sm:text-xs py-3 sm:py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all cursor-pointer"
                 >
-                  <Edit3 className="w-3.5 h-3.5" />
+                  <Edit3 className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   {t.editProductBtn}
                 </button>
                 <button
@@ -209,9 +209,9 @@ export const CatalogManager: React.FC = () => {
                       deleteProduct(prod.id);
                     }
                   }}
-                  className="px-3 py-2 border border-rose-100 hover:bg-rose-50 text-rose-600 rounded-xl transition-all flex items-center justify-center cursor-pointer"
+                  className="p-3 sm:p-2.5 border border-rose-100 hover:bg-rose-50 text-rose-600 rounded-xl transition-all flex items-center justify-center cursor-pointer active:scale-95"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4.5 h-4.5" />
                 </button>
               </div>
             </div>
