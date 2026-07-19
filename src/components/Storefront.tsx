@@ -320,10 +320,10 @@ export const Storefront: React.FC = () => {
 
       {/* Upgrade Banner for Unpaid Users */}
       {view !== 'customer' && !isSubscribed && (
-        <div className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 text-white py-3 px-4 shadow-md text-center text-xs sm:text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-          <div className="flex items-center gap-1.5 justify-center">
-            <Sparkles className="w-4 h-4 text-amber-200 shrink-0" />
-            <span>
+        <div className="bg-gradient-to-r from-amber-500 via-orange-600 to-red-600 text-white py-4 px-4 shadow-md text-center text-xs sm:text-sm font-bold flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 justify-center">
+            <Sparkles className="w-4.5 h-4.5 text-amber-200 shrink-0" />
+            <span className="leading-relaxed">
               {isRtl 
                 ? "⚠️ تنبيه: أنت تستخدم النسخة المجانية (يظهر للعملاء منتجين لكل قسم، 4 صور بحد أقصى، وقسمين فقط)." 
                 : "⚠️ Notice: You are on the Free Plan (Showing only 2 products per category, 4 images, 2 pages only)."}
@@ -331,9 +331,9 @@ export const Storefront: React.FC = () => {
           </div>
           <button
             onClick={() => setUpgradeOpen(true)}
-            className="bg-white text-orange-700 hover:bg-orange-50 font-black text-[11px] px-3.5 py-1.5 rounded-xl shadow-sm transition-all cursor-pointer flex items-center gap-1 shrink-0"
+            className="w-full sm:w-auto bg-white text-orange-700 hover:bg-orange-50 font-black text-sm sm:text-xs px-5 py-3 sm:px-4 sm:py-2 rounded-xl shadow-sm transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-amber-500" />
             <span>{isRtl ? "ترقية المتجر وإلغاء القيود 🚀" : "Upgrade & Unlock Store 🚀"}</span>
           </button>
         </div>
@@ -571,22 +571,22 @@ export const Storefront: React.FC = () => {
                           }`}>{prod.description}</p>
 
                           {/* Quick checkout */}
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2.5 mt-1">
                             <button
                               onClick={() => handleAddToCart(prod)}
                               style={{ backgroundColor: settings.primaryColor }}
-                              className="text-white font-bold text-[10px] px-3.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1 hover:opacity-90 transition-opacity cursor-pointer"
+                              className="text-white font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer min-h-[42px]"
                             >
-                              <Plus className="w-3 h-3" />
+                              <Plus className="w-3.5 h-3.5" />
                               {t.addToCart}
                             </button>
                             <a
                               href={getWhatsAppLink(prod)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-bold text-[10px] px-3 py-1.5 rounded-lg border border-emerald-200/50 dark:border-emerald-900/50 flex items-center gap-1 transition-colors"
+                              className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl border border-emerald-200/50 dark:border-emerald-900/50 flex items-center gap-1.5 transition-colors min-h-[42px]"
                             >
-                              <MessageSquare className="w-3 h-3" />
+                              <MessageSquare className="w-3.5 h-3.5" />
                               {t.orderNow}
                             </a>
                           </div>
