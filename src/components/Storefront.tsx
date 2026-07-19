@@ -242,34 +242,6 @@ export const Storefront: React.FC = () => {
               <span className="hidden sm:inline">{settings.language === 'en' ? 'العربية' : 'English'}</span>
             </button>
 
-            {/* View Mode Toggle */}
-            <div className={`p-1 rounded-xl border flex items-center gap-0.5 ${
-              darkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
-            }`}>
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`p-2 rounded-lg transition-all ${
-                  settings.viewMode === 'cards'
-                    ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-                title={t.modernCardMode}
-              >
-                <LayoutGrid className="w-4.5 h-4.5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
-                  settings.viewMode === 'list'
-                    ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
-                    : 'text-slate-400 hover:text-slate-500'
-                }`}
-                title={t.classicListMode}
-              >
-                <List className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
             {/* Dark Mode toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
@@ -343,19 +315,34 @@ export const Storefront: React.FC = () => {
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Search and Categories bar */}
         <div className="space-y-4 mb-8">
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className={`w-full pl-10 pr-4 py-3 border rounded-2xl text-sm font-semibold transition-all ${
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={t.searchPlaceholder}
+                className={`w-full pl-10 pr-4 py-3 border rounded-2xl text-sm font-semibold transition-all ${
+                  darkMode 
+                    ? 'bg-slate-900 border-slate-800 text-white focus:border-amber-500' 
+                    : 'bg-white border-slate-200 text-slate-800 focus:border-amber-500'
+                }`}
+              />
+              <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+            </div>
+            
+            {/* View Mode Toggle Button */}
+            <button
+              onClick={() => setViewMode(settings.viewMode === 'cards' ? 'list' : 'cards')}
+              className={`p-3 rounded-2xl border transition-all cursor-pointer shadow-sm ${
                 darkMode 
-                  ? 'bg-slate-900 border-slate-800 text-white focus:border-amber-500' 
-                  : 'bg-white border-slate-200 text-slate-800 focus:border-amber-500'
+                  ? 'border-slate-800 bg-slate-900 text-slate-400 hover:text-white' 
+                  : 'border-slate-200 bg-white text-slate-500 hover:bg-slate-50'
               }`}
-            />
-            <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+              title={settings.viewMode === 'cards' ? t.classicListMode : t.modernCardMode}
+            >
+              {settings.viewMode === 'cards' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
+            </button>
           </div>
 
           {/* Categories Selector Carousel */}
