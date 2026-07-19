@@ -217,52 +217,52 @@ export const Dashboard: React.FC = () => {
           </div>
 
           {/* Builder Navigation Tab Pill selectors */}
-          <div className="border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar">
+          <div className="border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto py-1 no-scrollbar">
             <button
               onClick={() => setActiveTab('catalog')}
-              className={`px-4.5 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-5 py-3.5 text-sm sm:text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 activeTab === 'catalog'
-                  ? 'border-amber-500 text-slate-900'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
+                  ? 'border-amber-500 text-slate-950 font-black'
+                  : 'border-transparent text-slate-500 hover:text-slate-850'
               }`}
             >
-              <Package className="w-4 h-4" />
+              <Package className="w-4.5 h-4.5" />
               {t.tabCatalog}
             </button>
 
             <button
               onClick={() => setActiveTab('csv')}
-              className={`px-4.5 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-5 py-3.5 text-sm sm:text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 activeTab === 'csv'
-                  ? 'border-amber-500 text-slate-900'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
+                  ? 'border-amber-500 text-slate-950 font-black'
+                  : 'border-transparent text-slate-500 hover:text-slate-850'
               }`}
             >
-              <FileSpreadsheet className="w-4 h-4" />
+              <FileSpreadsheet className="w-4.5 h-4.5" />
               {t.tabUpload}
             </button>
 
             <button
               onClick={() => setActiveTab('settings')}
-              className={`px-4.5 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-5 py-3.5 text-sm sm:text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 activeTab === 'settings'
-                  ? 'border-amber-500 text-slate-900'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
+                  ? 'border-amber-500 text-slate-950 font-black'
+                  : 'border-transparent text-slate-500 hover:text-slate-850'
               }`}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-4.5 h-4.5" />
               {t.tabSettings}
             </button>
 
             <button
               onClick={() => setActiveTab('qr')}
-              className={`px-4.5 py-3 text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+              className={`px-5 py-3.5 text-sm sm:text-xs font-bold transition-all border-b-2 whitespace-nowrap cursor-pointer flex items-center gap-2 ${
                 activeTab === 'qr'
-                  ? 'border-amber-500 text-slate-900'
-                  : 'border-transparent text-slate-400 hover:text-slate-600'
+                  ? 'border-amber-500 text-slate-950 font-black'
+                  : 'border-transparent text-slate-500 hover:text-slate-850'
               }`}
             >
-              <QrCode className="w-4 h-4" />
+              <QrCode className="w-4.5 h-4.5" />
               {t.tabQrCode}
             </button>
           </div>
