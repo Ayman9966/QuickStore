@@ -1,0 +1,6 @@
+{
+  "name": "QuickStore",
+  "description": "No-code online store builder. Instantly convert CSV files to professional product catalogs and restaurant menus with integrated WhatsApp ordering, custom branding, and QR code generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
