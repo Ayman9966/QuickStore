@@ -116,9 +116,9 @@ export const LandingPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen text-slate-800 font-sans selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden">
+    <div id="landing-page" className="bg-slate-50 min-h-screen text-slate-800 font-sans selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden">
       {/* Header Navigation */}
-      <nav className="border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40 px-4 py-3.5">
+      <nav id="main-nav" className="border-b border-slate-200/80 bg-white/95 backdrop-blur-md sticky top-0 z-40 px-4 py-3.5">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-amber-500 text-white p-2 rounded-xl shadow-md shadow-amber-500/20">
@@ -131,6 +131,7 @@ export const LandingPage: React.FC = () => {
           
           <div className="flex items-center gap-3">
             <button 
+              id="try-demo-btn"
               onClick={handleTryDemo}
               className="text-slate-600 hover:text-amber-600 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors duration-150"
             >
@@ -142,12 +143,14 @@ export const LandingPage: React.FC = () => {
                   👤 @{currentUser}
                 </span>
                 <button 
+                  id="logout-btn"
                   onClick={logoutUser}
                   className="text-red-500 hover:text-red-600 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors duration-150"
                 >
                   Logout
                 </button>
                 <button 
+                  id="go-to-dashboard-btn"
                   onClick={() => setView('builder')}
                   className="bg-slate-900 text-white hover:bg-slate-800 text-sm font-medium px-4 py-2 rounded-xl transition-all duration-150 shadow-sm"
                 >
@@ -157,6 +160,7 @@ export const LandingPage: React.FC = () => {
             ) : (
               <>
                 <button 
+                  id="login-btn"
                   onClick={handleOpenLogin}
                   className="text-slate-700 hover:text-amber-600 text-sm font-medium px-3.5 py-2 rounded-lg transition-colors duration-150"
                 >
@@ -169,7 +173,7 @@ export const LandingPage: React.FC = () => {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative py-20 px-4 overflow-hidden">
+      <header id="hero-section" className="relative py-24 px-4 overflow-hidden">
         {/* Abstract background elements */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-amber-200/30 rounded-full blur-3xl -z-10" />
         <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-teal-100/40 rounded-full blur-2xl -z-10" />
@@ -189,7 +193,7 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="text-4xl sm:text-6xl font-black tracking-tight text-slate-900 leading-tight mb-6"
+            className="text-5xl sm:text-7xl font-black tracking-tight text-slate-950 leading-tight mb-8"
           >
             Launch Your <span className="bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent">Online Store</span> in Minutes
           </motion.h1>
@@ -198,7 +202,7 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto mb-10"
+            className="text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto mb-12"
           >
             {t.heroSubtitle}
           </motion.p>
@@ -210,6 +214,7 @@ export const LandingPage: React.FC = () => {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto"
           >
             <button
+              id="start-builder-btn"
               onClick={handleStartBuilder}
               className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg shadow-amber-500/20 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
             >
@@ -217,6 +222,7 @@ export const LandingPage: React.FC = () => {
               <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button
+              id="try-demo-btn-hero"
               onClick={handleTryDemo}
               className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-semibold px-8 py-4 rounded-2xl border border-slate-200 shadow-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
             >
@@ -229,7 +235,7 @@ export const LandingPage: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-4 text-xs text-slate-500 flex items-center justify-center gap-1.5"
+            className="mt-6 text-xs text-slate-500 flex items-center justify-center gap-1.5"
           >
             <Clock className="w-3.5 h-3.5 text-slate-400" />
             {t.noCardRequired}

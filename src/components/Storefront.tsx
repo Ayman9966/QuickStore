@@ -44,7 +44,6 @@ export const Storefront: React.FC = () => {
 
   // UI state
   const [loading, setLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cartOpen, setCartOpen] = useState(false);
@@ -191,15 +190,12 @@ export const Storefront: React.FC = () => {
 
   return (
     <div 
+      id="storefront-page"
       dir={isRtl ? 'rtl' : 'ltr'} 
-      className={`min-h-screen font-sans transition-colors duration-250 ${
-        darkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-800'
-      }`}
+      className="min-h-screen font-sans transition-colors duration-250 bg-slate-50 text-slate-800"
     >
       {/* Customer Header */}
-      <header className={`sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors border-b ${
-        darkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'
-      }`}>
+      <header className="sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors border-b bg-white/90 border-slate-200">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Store logo */}
@@ -215,12 +211,8 @@ export const Storefront: React.FC = () => {
               </div>
             )}
             <div>
-              <h1 className={`font-black tracking-tight text-base sm:text-lg ${
-                darkMode ? 'text-white' : 'text-slate-950'
-              }`}>{settings.storeName}</h1>
-              <p className={`text-[10px] sm:text-xs font-semibold ${
-                darkMode ? 'text-slate-400' : 'text-slate-500'
-              }`}>
+              <h1 className="font-black tracking-tight text-base sm:text-lg text-slate-950">{settings.storeName}</h1>
+              <p className="text-[10px] sm:text-xs font-semibold text-slate-500">
                 {settings.businessType === 'food' ? '🍽️ Cafe & Bistro' : '🛍️ Retail Outlet'}
               </p>
             </div>
@@ -231,55 +223,11 @@ export const Storefront: React.FC = () => {
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className={`p-2.5 sm:p-3 rounded-xl border transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold ${
-                darkMode 
-                  ? 'border-slate-800 hover:bg-slate-800 text-slate-300' 
-                  : 'border-slate-200 hover:bg-slate-100 text-slate-750'
-              }`}
+              className="p-2.5 sm:p-3 rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-750"
               title="Change Language"
             >
               <Globe className="w-4.5 h-4.5 text-amber-500" />
               <span className="hidden sm:inline">{settings.language === 'en' ? 'العربية' : 'English'}</span>
-            </button>
-
-            {/* View Mode Toggle */}
-            <div className={`p-1 rounded-xl border flex items-center gap-0.5 ${
-              darkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'
-            }`}>
-              <button
-                onClick={() => setViewMode('cards')}
-                className={`p-2 rounded-lg transition-all ${
-                  settings.viewMode === 'cards'
-                    ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
-                title={t.modernCardMode}
-              >
-                <LayoutGrid className="w-4.5 h-4.5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
-                  settings.viewMode === 'list'
-                    ? (darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-950 shadow-sm')
-                    : 'text-slate-400 hover:text-slate-500'
-                }`}
-                title={t.classicListMode}
-              >
-                <List className="w-4.5 h-4.5" />
-              </button>
-            </div>
-
-            {/* Dark Mode toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className={`p-2.5 sm:p-3 rounded-xl border transition-colors cursor-pointer ${
-                darkMode 
-                  ? 'border-slate-800 hover:bg-slate-800 text-amber-400' 
-                  : 'border-slate-200 hover:bg-slate-100 text-slate-650'
-              }`}
-            >
-              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
             {/* Cart Button */}
@@ -301,9 +249,7 @@ export const Storefront: React.FC = () => {
 
       {/* Back to Creator Panel Alert (For demo purposes) */}
       {view !== 'customer' && (
-        <div className={`py-2 px-4 text-center text-xs font-semibold border-b ${
-          darkMode ? 'bg-slate-900 border-slate-800 text-slate-300' : 'bg-amber-50 border-amber-100 text-amber-800'
-        }`}>
+        <div className="py-2 px-4 text-center text-xs font-semibold border-b bg-amber-50 border-amber-100 text-amber-800">
           <span className="mr-2">🔧 {isRtl ? 'وضع إدارة المتجر:' : 'Owner Mode:'}</span>
           <button 
             onClick={() => {
@@ -343,19 +289,24 @@ export const Storefront: React.FC = () => {
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Search and Categories bar */}
         <div className="space-y-4 mb-8">
-          <div className="relative max-w-md mx-auto">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className={`w-full pl-10 pr-4 py-3 border rounded-2xl text-sm font-semibold transition-all ${
-                darkMode 
-                  ? 'bg-slate-900 border-slate-800 text-white focus:border-amber-500' 
-                  : 'bg-white border-slate-200 text-slate-800 focus:border-amber-500'
-              }`}
-            />
-            <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+          <div className="flex items-center gap-2 max-w-md mx-auto">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={t.searchPlaceholder}
+                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl text-sm font-semibold transition-all bg-white text-slate-800 focus:border-amber-500"
+              />
+              <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+            </div>
+            <button
+              onClick={() => setViewMode(settings.viewMode === 'cards' ? 'list' : 'cards')}
+              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+              title={settings.viewMode === 'cards' ? t.classicListMode : t.modernCardMode}
+            >
+              {settings.viewMode === 'cards' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
+            </button>
           </div>
 
           {/* Categories Selector Carousel */}
@@ -371,9 +322,7 @@ export const Storefront: React.FC = () => {
                 className={`px-5 py-3 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
                   selectedCategory === cat
                     ? 'text-white shadow-sm'
-                    : (darkMode 
-                        ? 'border-slate-800 bg-slate-900 text-slate-350 hover:text-white' 
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100')
+                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 {cat === 'All' ? t.categoryAll : cat}
@@ -425,15 +374,11 @@ export const Storefront: React.FC = () => {
               {filteredProducts.map(prod => (
                 <div 
                   key={prod.id} 
-                  className={`border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group transition-all hover:-translate-y-0.5 ${
-                    darkMode 
-                      ? 'bg-slate-900 border-slate-800/80 hover:border-slate-700' 
-                      : 'bg-white border-slate-200/60 hover:border-slate-300'
-                  }`}
+                  className="border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group transition-all hover:-translate-y-0.5 bg-white hover:border-slate-300"
                 >
                   <div>
                     {/* Item Image area */}
-                    <div className="aspect-[16/10] bg-slate-100 dark:bg-slate-950 relative overflow-hidden shrink-0 border-b dark:border-slate-800">
+                    <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-200">
                       {prod.image_url ? (
                         allowedImageProductIds.includes(prod.id) ? (
                           <img
@@ -443,11 +388,11 @@ export const Storefront: React.FC = () => {
                           />
                         ) : (
                           <div 
-                            className="w-full h-full bg-slate-900/10 dark:bg-slate-950/40 backdrop-blur-xs flex flex-col items-center justify-center text-center p-3 cursor-pointer hover:bg-amber-500/10 transition-colors"
+                            className="w-full h-full bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center text-center p-3 cursor-pointer hover:bg-amber-500/10 transition-colors"
                             onClick={() => setUpgradeOpen(true)}
                           >
                             <Lock className="w-5 h-5 text-amber-500 mb-1 animate-bounce" />
-                            <span className="text-[10px] font-black text-amber-600 dark:text-amber-400 block px-1.5 py-0.5 rounded-md bg-amber-500/10">
+                            <span className="text-[10px] font-black text-amber-600 block px-1.5 py-0.5 rounded-md bg-amber-500/10">
                               {isRtl ? 'صورة مقفلة (نسخة مدفوعة) 🔒' : 'Premium Image 🔒'}
                             </span>
                             <span className="text-[9px] text-slate-400 mt-1 block max-w-[150px] leading-tight">
@@ -456,13 +401,13 @@ export const Storefront: React.FC = () => {
                           </div>
                         )
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                           <ShoppingBag className="w-8 h-8" />
                         </div>
                       )}
 
                       {/* Currency badge float */}
-                      <div className="absolute top-3 right-3 bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 px-3 py-1 rounded-full text-xs font-black shadow-sm text-amber-500">
+                      <div className="absolute top-3 right-3 bg-white/95 border border-slate-200 px-3 py-1 rounded-full text-xs font-black shadow-sm text-amber-500">
                         {settings.currencySymbol}
                         {prod.price.toFixed(2)}
                       </div>
@@ -471,28 +416,24 @@ export const Storefront: React.FC = () => {
                     {/* Meta info area */}
                     <div className="p-4 sm:p-5">
                       <div className="mb-2">
-                        <span className="text-[9px] uppercase tracking-wider font-extrabold bg-amber-50 dark:bg-slate-850 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-slate-800 px-2.5 py-0.5 rounded-full">
+                        <span className="text-[9px] uppercase tracking-wider font-extrabold bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-0.5 rounded-full">
                           {prod.category}
                         </span>
                       </div>
-                      <h3 className={`font-bold text-sm sm:text-base leading-tight mb-2 ${
-                        darkMode ? 'text-white' : 'text-slate-900'
-                      }`}>{prod.name}</h3>
-                      <p className={`text-xs leading-relaxed line-clamp-3 ${
-                        darkMode ? 'text-slate-400' : 'text-slate-500'
-                      }`}>{prod.description}</p>
+                      <h3 className="font-bold text-sm sm:text-base leading-tight mb-2 text-slate-900">{prod.name}</h3>
+                      <p className="text-xs leading-relaxed line-clamp-3 text-slate-500">{prod.description}</p>
                     </div>
                   </div>
 
                   {/* Add / Checkout Actions footer */}
-                  <div className="p-4 pt-0 border-t dark:border-slate-800/60 flex items-center gap-2">
+                  <div className="p-4 pt-0 flex items-center gap-2">
                     <button
                       onClick={() => handleAddToCart(prod)}
                       style={{ 
                         borderColor: settings.primaryColor,
                         color: settings.primaryColor
                       }}
-                      className="flex-1 border text-xs font-bold py-2.5 rounded-xl transition-all hover:bg-slate-100/50 dark:hover:bg-slate-850 flex items-center justify-center gap-1 cursor-pointer"
+                      className="flex-1 border text-xs font-bold py-2.5 rounded-xl transition-all hover:bg-slate-100/50 flex items-center justify-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       {t.addToCart}
@@ -519,18 +460,16 @@ export const Storefront: React.FC = () => {
                 <div key={group.category} className="space-y-4">
                   {/* Category Title Heading */}
                   <div className="flex items-center gap-3">
-                    <h2 className={`font-black text-lg sm:text-xl tracking-tight ${
-                      darkMode ? 'text-white' : 'text-slate-900'
-                    }`}>{group.category}</h2>
-                    <div className="flex-1 h-[2px] bg-slate-200 dark:bg-slate-800" />
+                    <h2 className="font-black text-lg sm:text-xl tracking-tight text-slate-900">{group.category}</h2>
+                    <div className="flex-1 h-[2px] bg-slate-200" />
                   </div>
 
                   {/* Category Items list */}
-                  <div className="divide-y divide-slate-100 dark:divide-slate-900">
+                  <div className="divide-y divide-slate-100 border-t border-slate-100">
                     {group.items.map(prod => (
                       <div 
                         key={prod.id} 
-                        className="py-4.5 sm:py-5 flex items-start gap-4 hover:bg-slate-150/10 dark:hover:bg-slate-900/30 rounded-xl px-2.5 transition-colors"
+                        className="py-4.5 sm:py-5 flex items-start gap-4 hover:bg-slate-50 rounded-xl px-2.5 transition-colors"
                       >
                         {/* Compact thumbnail */}
                         {prod.image_url && (
@@ -538,16 +477,16 @@ export const Storefront: React.FC = () => {
                             <img 
                               src={prod.image_url} 
                               alt={prod.name} 
-                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-250 dark:border-slate-800 shadow-sm shrink-0" 
+                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" 
                             />
                           ) : (
                             <div 
                               onClick={() => setUpgradeOpen(true)}
-                              className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 dark:bg-slate-900 border border-amber-200/50 dark:border-amber-900/40 rounded-xl flex flex-col items-center justify-center text-center p-1 cursor-pointer hover:bg-amber-500/10 transition-colors shrink-0"
+                              className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 border border-amber-200/50 rounded-xl flex flex-col items-center justify-center text-center p-1 cursor-pointer hover:bg-amber-500/10 transition-colors shrink-0"
                               title="أنت في الخطة المجانية"
                             >
                               <Lock className="w-4 h-4 text-amber-500" />
-                              <span className="text-[8px] text-amber-600 dark:text-amber-400 font-extrabold mt-1">
+                              <span className="text-[8px] text-amber-600 font-extrabold mt-1">
                                 {isRtl ? 'مقفل 🔒' : 'Locked 🔒'}
                               </span>
                             </div>
@@ -557,18 +496,14 @@ export const Storefront: React.FC = () => {
                         {/* Text and metadata layout */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-3 mb-1">
-                            <h3 className={`font-bold text-sm sm:text-base ${
-                              darkMode ? 'text-white' : 'text-slate-950'
-                            }`}>{prod.name}</h3>
+                            <h3 className="font-bold text-sm sm:text-base text-slate-950">{prod.name}</h3>
                             <span className="font-extrabold text-amber-500 text-sm sm:text-base shrink-0">
                               {settings.currencySymbol}
                               {prod.price.toFixed(2)}
                             </span>
                           </div>
                           
-                          <p className={`text-xs leading-relaxed mb-3.5 line-clamp-2 ${
-                            darkMode ? 'text-slate-400' : 'text-slate-500'
-                          }`}>{prod.description}</p>
+                          <p className="text-xs leading-relaxed mb-3.5 line-clamp-2 text-slate-500">{prod.description}</p>
 
                           {/* Quick checkout */}
                           <div className="flex flex-wrap items-center gap-2.5 mt-1">
@@ -584,7 +519,7 @@ export const Storefront: React.FC = () => {
                               href={getWhatsAppLink(prod)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/20 dark:text-emerald-400 font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl border border-emerald-200/50 dark:border-emerald-900/50 flex items-center gap-1.5 transition-colors min-h-[42px]"
+                              className="bg-emerald-50 text-emerald-700 font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl border border-emerald-200/50 flex items-center gap-1.5 transition-colors min-h-[42px]"
                             >
                               <MessageSquare className="w-3.5 h-3.5" />
                               {t.orderNow}
@@ -608,11 +543,7 @@ export const Storefront: React.FC = () => {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed bottom-6 ${isRtl ? 'left-6' : 'right-6'} z-50 p-4 rounded-2xl shadow-xl flex items-center gap-2.5 border text-xs sm:text-sm font-semibold ${
-              darkMode 
-                ? 'bg-slate-900 border-slate-800 text-white shadow-slate-950/40' 
-                : 'bg-white border-slate-100 text-slate-850 shadow-slate-200/50'
-            }`}
+            className={`fixed bottom-6 ${isRtl ? 'left-6' : 'right-6'} z-50 p-4 rounded-2xl shadow-xl flex items-center gap-2.5 border text-xs sm:text-sm font-semibold bg-white border-slate-100 text-slate-850 shadow-slate-200/50`}
           >
             <div className="bg-emerald-100 text-emerald-700 rounded-full p-1">
               <Check className="w-3.5 h-3.5" />
@@ -632,31 +563,20 @@ export const Storefront: React.FC = () => {
               animate={{ opacity: 0.4 }}
               exit={{ opacity: 0 }}
               onClick={() => setCartOpen(false)}
-              className="fixed inset-0 bg-slate-950 z-40"
-            />
-
-            {/* Slider container */}
-            <motion.div
-              initial={{ x: isRtl ? '-100%' : '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: isRtl ? '-100%' : '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
-              className={`fixed top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full max-w-md z-50 border-t sm:border-t-0 shadow-2xl flex flex-col justify-between ${
-                darkMode ? 'bg-slate-900 border-slate-850 text-white' : 'bg-white border-slate-200 text-slate-800'
-              }`}
+              className={`fixed top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full max-w-md z-50 border-t sm:border-t-0 shadow-2xl flex flex-col justify-between bg-white border-slate-200 text-slate-800`}
             >
               {/* Drawer head */}
-              <div className="px-5 py-4 border-b dark:border-slate-800/80 flex items-center justify-between">
+              <div className="px-5 py-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-amber-500" />
-                  <h4 className="font-extrabold text-slate-900 dark:text-white text-base">{t.shoppingCart}</h4>
-                  <span className="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-0.5 rounded-full">
+                  <h4 className="font-extrabold text-slate-900 text-base">{t.shoppingCart}</h4>
+                  <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
                     {cartCount} items
                   </span>
                 </div>
                 <button
                   onClick={() => setCartOpen(false)}
-                  className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -666,27 +586,27 @@ export const Storefront: React.FC = () => {
               <div className="flex-1 overflow-y-auto p-5 space-y-4">
                 {cart.length === 0 ? (
                   <div className="text-center py-24 flex flex-col items-center justify-center">
-                    <ShoppingBag className="w-12 h-12 text-slate-200 dark:text-slate-800 mb-3" />
+                    <ShoppingBag className="w-12 h-12 text-slate-200 mb-3" />
                     <p className="text-sm font-semibold text-slate-400">{t.cartEmpty}</p>
                   </div>
                 ) : (
                   cart.map(item => (
                     <div 
                       key={item.product.id} 
-                      className="flex items-start gap-3.5 pb-4 border-b dark:border-slate-800/60"
+                      className="flex items-start gap-3.5 pb-4 border-b border-slate-100"
                     >
                       {item.product.image_url && (
                         <img 
                           src={item.product.image_url} 
                           alt={item.product.name} 
-                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm shrink-0" 
+                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" 
                         />
                       )}
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h5 className="font-bold text-slate-900 dark:text-white text-xs truncate leading-tight">{item.product.name}</h5>
-                          <span className="font-bold text-xs shrink-0 text-slate-900 dark:text-white">
+                          <h5 className="font-bold text-slate-900 text-xs truncate leading-tight">{item.product.name}</h5>
+                          <span className="font-bold text-xs shrink-0 text-slate-900">
                             {settings.currencySymbol}
                             {(item.product.price * item.quantity).toFixed(2)}
                           </span>
@@ -695,20 +615,18 @@ export const Storefront: React.FC = () => {
 
                         {/* Quantity manipulators */}
                         <div className="flex items-center gap-3 mt-2.5">
-                          <div className={`p-1 border dark:border-slate-800 rounded-xl flex items-center gap-2 ${
-                            darkMode ? 'bg-slate-950' : 'bg-slate-50'
-                          }`}>
+                          <div className="p-1 border border-slate-200 rounded-xl flex items-center gap-2 bg-slate-50">
                             <button
                               onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
-                              className="p-2 rounded-lg hover:bg-slate-250 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-400 cursor-pointer active:scale-90 transition-transform"
+                              className="p-2 rounded-lg hover:bg-slate-250 text-slate-600 cursor-pointer active:scale-90 transition-transform"
                               aria-label="Decrease quantity"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
-                            <span className="text-sm font-bold w-5 text-center text-slate-800 dark:text-slate-100">{item.quantity}</span>
+                            <span className="text-sm font-bold w-5 text-center text-slate-800">{item.quantity}</span>
                             <button
                               onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
-                              className="p-2 rounded-lg hover:bg-slate-250 dark:hover:bg-slate-850 text-slate-600 dark:text-slate-400 cursor-pointer active:scale-90 transition-transform"
+                              className="p-2 rounded-lg hover:bg-slate-250 text-slate-600 cursor-pointer active:scale-90 transition-transform"
                               aria-label="Increase quantity"
                             >
                               <Plus className="w-4 h-4" />
@@ -717,7 +635,7 @@ export const Storefront: React.FC = () => {
 
                           <button
                             onClick={() => removeFromCart(item.product.id)}
-                            className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer p-1"
+                            className="text-xs font-bold text-rose-600 hover:underline cursor-pointer p-1"
                           >
                             Remove
                           </button>
@@ -730,13 +648,13 @@ export const Storefront: React.FC = () => {
 
               {/* Checkout Foot summary */}
               {cart.length > 0 && (
-                <div className="p-5 border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-4">
+                <div className="p-5 border-t bg-slate-50/50 space-y-4">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span>{t.subtotal}</span>
                       <span>{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm font-extrabold text-slate-900 dark:text-white">
+                    <div className="flex items-center justify-between text-sm font-extrabold text-slate-900">
                       <span>{t.total}</span>
                       <span>{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
                     </div>
@@ -780,87 +698,85 @@ export const Storefront: React.FC = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md z-[60] p-6 rounded-3xl shadow-2xl border flex flex-col justify-between ${
-                darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-100 text-slate-800'
-              }`}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-md z-[60] p-6 rounded-3xl shadow-2xl border border-slate-100 flex flex-col justify-between bg-white text-slate-800"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  <div className="bg-amber-100 dark:bg-amber-950/40 p-2 rounded-2xl">
+                  <div className="bg-amber-100 p-2 rounded-2xl">
                     <Sparkles className="w-5 h-5 text-amber-500" />
                   </div>
-                  <h4 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg">
+                  <h4 className="font-extrabold text-slate-900 text-base sm:text-lg">
                     {isRtl ? 'الترقية للمتجر الاحترافي ✨' : 'Upgrade to Pro Store ✨'}
                   </h4>
                 </div>
                 <button
                   onClick={() => setUpgradeOpen(false)}
-                  className="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4.5 h-4.5" />
                 </button>
               </div>
 
               <div className="space-y-4 text-xs sm:text-sm leading-relaxed mb-6">
-                <p className={darkMode ? 'text-slate-300' : 'text-slate-600'}>
+                <p className="text-slate-600">
                   {isRtl 
                     ? 'أطلق العنان لكامل إمكانيات متجرك! عند الاشتراك في الخطة الاحترافية، سيتم تفعيل الميزات التالية فوراً وبشكل تلقائي للعملاء:' 
                     : 'Unlock the full potential of your online store! Upgrading to the professional plan instantly activates:'}
                 </p>
 
-                <div className="space-y-2 bg-amber-500/5 dark:bg-amber-500/10 p-4 rounded-2xl border border-amber-500/10">
+                <div className="space-y-2 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
                   <div className="flex items-start gap-2.5">
                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-900 dark:text-white block">
+                      <span className="font-bold text-slate-900 block">
                         {isRtl ? 'منتجات وقوائم غير محدودة' : 'Unlimited Products & Categories'}
                       </span>
-                      <span className="text-[11.5px] text-slate-600 dark:text-slate-300 block leading-normal font-medium">
+                      <span className="text-[11.5px] text-slate-600 block leading-normal font-medium">
                         {isRtl ? 'عرض كافة منتجات الكتالوج للعملاء (بدلاً من منتجين فقط لكل قسم).' : 'Show all catalog items to customers (instead of just 2 per category).'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2.5 border-t border-slate-100 dark:border-slate-800 pt-2 mt-2">
+                  <div className="flex items-start gap-2.5 border-t border-slate-100 pt-2 mt-2">
                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-900 dark:text-white block">
+                      <span className="font-bold text-slate-900 block">
                         {isRtl ? 'صور غير محدودة' : 'Unlimited Images'}
                       </span>
-                      <span className="text-[11.5px] text-slate-600 dark:text-slate-300 block leading-normal font-medium">
+                      <span className="text-[11.5px] text-slate-600 block leading-normal font-medium">
                         {isRtl ? 'عرض صور كافة المنتجات دون قيود أو إخفاء (بدلاً من 4 صور فقط).' : 'Show images for all your products without any premium locks.'}
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2.5 border-t border-slate-100 dark:border-slate-800 pt-2 mt-2">
+                  <div className="flex items-start gap-2.5 border-t border-slate-100 pt-2 mt-2">
                     <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold text-slate-900 dark:text-white block">
+                      <span className="font-bold text-slate-900 block">
                         {isRtl ? 'أقسام وصفحات كاملة' : 'Full Navigation & Pages'}
                       </span>
-                      <span className="text-[11.5px] text-slate-600 dark:text-slate-300 block leading-normal font-medium">
+                      <span className="text-[11.5px] text-slate-600 block leading-normal font-medium">
                         {isRtl ? 'تصفح غير محدود لكافة الأقسام والمجموعات داخل متجرك.' : 'Navigate through all custom pages and categories without limits.'}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="text-center p-3 rounded-xl bg-slate-100 dark:bg-slate-850">
-                  <span className="text-[11px] text-slate-550 dark:text-slate-400 block font-semibold">
+                <div className="text-center p-3 rounded-xl bg-slate-100">
+                  <span className="text-[11px] text-slate-550 block font-semibold">
                     {isRtl ? 'قيمة الاشتراك الشهري' : 'Monthly Subscription'}
                   </span>
-                  <span className="text-2xl font-black text-slate-900 dark:text-white block">
-                    $15.00<span className="text-xs font-semibold text-slate-500 dark:text-slate-400">/{isRtl ? 'شهرياً' : 'month'}</span>
+                  <span className="text-2xl font-black text-slate-900 block">
+                    $15.00<span className="text-xs font-semibold text-slate-500">/{isRtl ? 'شهرياً' : 'month'}</span>
                   </span>
                 </div>
 
-                <div className="bg-amber-500/5 dark:bg-amber-500/10 p-3 rounded-2xl border border-amber-500/10 text-center space-y-1.5">
-                  <span className="text-[10px] text-slate-550 dark:text-slate-400 block font-bold uppercase tracking-wider">
+                <div className="bg-amber-500/5 p-3 rounded-2xl border border-amber-500/10 text-center space-y-1.5">
+                  <span className="text-[10px] text-slate-550 block font-bold uppercase tracking-wider">
                     {isRtl ? 'معرف متجرك الخاص (Store ID)' : 'Your Unique Store ID'}
                   </span>
                   <div className="flex items-center justify-center gap-1.5">
-                    <code className="px-2 py-1 rounded bg-slate-200 dark:bg-slate-800 text-xs font-mono font-bold text-amber-500">
+                    <code className="px-2 py-1 rounded bg-slate-200 text-xs font-mono font-bold text-amber-500">
                       {settings.storeId || 'N/A'}
                     </code>
                     <button
@@ -892,11 +808,7 @@ export const Storefront: React.FC = () => {
               <div className="flex gap-2.5">
                 <button
                   onClick={() => setUpgradeOpen(false)}
-                  className={`flex-1 font-bold text-xs py-3.5 rounded-2xl border transition-all cursor-pointer ${
-                    darkMode 
-                      ? 'border-slate-800 hover:bg-slate-800 text-slate-300' 
-                      : 'border-slate-200 hover:bg-slate-50 text-slate-600'
-                  }`}
+                  className="flex-1 font-bold text-xs py-3.5 rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer text-slate-600"
                 >
                   {isRtl ? 'إلغاء' : 'Cancel'}
                 </button>
@@ -933,9 +845,7 @@ export const Storefront: React.FC = () => {
               initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 30 }}
-              className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-sm z-[110] p-6 rounded-[32px] shadow-2xl border flex flex-col items-center ${
-                darkMode ? 'bg-slate-900 border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-800'
-              }`}
+              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] max-w-sm z-[110] p-6 rounded-[32px] shadow-2xl border flex flex-col items-center bg-white border-slate-200 text-slate-800"
             >
               <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 animate-bounce">
                 <Lock className="w-6 h-6 text-amber-500" />
@@ -964,7 +874,7 @@ export const Storefront: React.FC = () => {
                         ? 'bg-red-500 border-red-500 animate-pulse'
                         : idx < enteredPasscode.length
                         ? 'bg-amber-500 border-amber-500 scale-125 shadow-[0_0_12px_rgba(245,158,11,0.6)]'
-                        : darkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-300 bg-slate-100'
+                        : 'border-slate-300 bg-slate-100'
                     }`}
                   />
                 ))}
@@ -982,11 +892,7 @@ export const Storefront: React.FC = () => {
                         setEnteredPasscode(prev => prev + num);
                       }
                     }}
-                    className={`h-14 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 ${
-                      darkMode 
-                        ? 'bg-slate-800 hover:bg-slate-700 text-white active:bg-slate-650' 
-                        : 'bg-slate-100 hover:bg-slate-200 text-slate-900 active:bg-slate-300'
-                    }`}
+                    className="h-14 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-900 active:bg-slate-300"
                   >
                     {num}
                   </button>
@@ -996,9 +902,7 @@ export const Storefront: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEnteredPasscode('')}
-                  className={`h-14 rounded-2xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 ${
-                    darkMode ? 'bg-slate-800 hover:bg-red-950/40 text-red-400' : 'bg-slate-100 hover:bg-red-50 text-red-500'
-                  }`}
+                  className="h-14 rounded-2xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 bg-slate-100 hover:bg-red-50 text-red-500"
                 >
                   {isRtl ? 'مسح' : 'Clear'}
                 </button>
@@ -1012,11 +916,7 @@ export const Storefront: React.FC = () => {
                       setEnteredPasscode(prev => prev + '0');
                     }
                   }}
-                  className={`h-14 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 ${
-                    darkMode 
-                      ? 'bg-slate-800 hover:bg-slate-700 text-white active:bg-slate-650' 
-                      : 'bg-slate-100 hover:bg-slate-200 text-slate-900 active:bg-slate-300'
-                  }`}
+                  className="h-14 rounded-2xl font-mono text-xl font-bold flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-900 active:bg-slate-300"
                 >
                   0
                 </button>
@@ -1025,9 +925,7 @@ export const Storefront: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setEnteredPasscode(prev => prev.slice(0, -1))}
-                  className={`h-14 rounded-2xl flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 ${
-                    darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-500'
-                  }`}
+                  className="h-14 rounded-2xl flex items-center justify-center transition-all cursor-pointer select-none active:scale-95 bg-slate-100 hover:bg-slate-200 text-slate-500"
                 >
                   {isRtl ? '←' : '←'}
                 </button>

@@ -97,7 +97,7 @@ export const CatalogManager: React.FC = () => {
   return (
     <div className="space-y-6" id="catalog-manager-container">
       {/* Search, Filter & Actions Top Bar */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Search Input */}
         <div className="relative w-full md:max-w-xs">
           <input
@@ -116,9 +116,9 @@ export const CatalogManager: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2.5 sm:px-3.5 sm:py-1.5 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 selectedCategory === cat
-                  ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/10'
+                  ? 'bg-amber-500 text-white shadow-sm'
                   : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
@@ -131,7 +131,7 @@ export const CatalogManager: React.FC = () => {
         <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
           <button
             onClick={handleOpenAddForm}
-            className="flex-1 md:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm sm:text-xs px-5 py-3 sm:py-2.5 rounded-xl shadow-sm shadow-amber-500/10 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 md:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             {t.addProductBtn}
@@ -144,10 +144,9 @@ export const CatalogManager: React.FC = () => {
                   clearCatalog();
                 }
               }}
-              className="px-4 py-3 sm:py-2.5 border border-rose-100 hover:bg-rose-50 rounded-xl text-rose-600 text-sm sm:text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
+              className="px-4 py-2.5 border border-rose-100 hover:bg-rose-50 rounded-xl text-rose-600 text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
-              Clear
             </button>
           )}
         </div>
