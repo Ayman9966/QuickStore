@@ -192,50 +192,49 @@ export const Storefront: React.FC = () => {
       className="min-h-screen font-sans transition-colors duration-250 bg-slate-50 text-slate-800"
     >
       {/* Customer Header */}
-      <header className="sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors border-b bg-white/90 border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm/50 transition-colors">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* Store logo */}
             {settings.logoUrl ? (
               <img 
                 src={settings.logoUrl} 
                 alt={settings.storeName}
-                className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-sm shrink-0"
+                className="w-11 h-11 rounded-2xl object-cover border border-slate-100 shadow-sm shrink-0"
               />
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-sm shrink-0 select-none">
-                <ShoppingBag className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-sm shrink-0 select-none">
+                <ShoppingBag className="w-6 h-6" />
               </div>
             )}
             <div>
-              <h1 className="font-black tracking-tight text-base sm:text-lg text-slate-950">{settings.storeName}</h1>
-              <p className="text-[10px] sm:text-xs font-semibold text-slate-500">
-                {settings.businessType === 'food' ? '🍽️ Cafe & Bistro' : '🛍️ Retail Outlet'}
+              <h1 className="font-bold tracking-tight text-lg sm:text-xl text-slate-950 leading-tight">{settings.storeName}</h1>
+              <p className="text-[11px] font-medium text-slate-500 tracking-wide uppercase">
+                {settings.businessType === 'food' ? 'Cafe & Bistro' : 'Retail Outlet'}
               </p>
             </div>
           </div>
 
           {/* Quick Controls */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
-              className="p-2.5 sm:p-3 rounded-xl border transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold border-slate-200 hover:bg-slate-100 text-slate-750"
+              className="p-3 rounded-xl border border-slate-200 hover:border-slate-300 transition-all flex items-center gap-2 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50"
               title="Change Language"
             >
-              <Globe className="w-4.5 h-4.5 text-amber-500" />
+              <Globe className="w-4 h-4 text-slate-400" />
               <span className="hidden sm:inline">{settings.language === 'en' ? 'العربية' : 'English'}</span>
             </button>
 
             {/* Cart Button */}
             <button
               onClick={() => setCartOpen(true)}
-              style={{ backgroundColor: settings.primaryColor }}
-              className="text-white p-2.5 sm:p-3 rounded-xl shadow-md font-extrabold flex items-center gap-1.5 cursor-pointer relative shrink-0 transition-opacity hover:opacity-90"
+              className="bg-slate-900 text-white p-3 rounded-xl shadow-lg shadow-slate-900/10 font-bold flex items-center gap-2 cursor-pointer relative shrink-0 transition-transform active:scale-95 hover:bg-slate-800"
             >
-              <ShoppingBag className="w-4.5 h-4.5" />
+              <ShoppingBag className="w-4 h-4" />
               {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white ring-1 ring-red-500/10">
+                <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
                   {cartCount}
                 </span>
               )}
@@ -285,23 +284,23 @@ export const Storefront: React.FC = () => {
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Search and Categories bar */}
-        <div className="space-y-4 mb-8">
-          <div className="flex items-center gap-3 max-w-lg mx-auto">
+        <div className="space-y-6 mb-10">
+          <div className="flex items-center gap-3 max-w-2xl mx-auto">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={t.searchPlaceholder}
-                className="w-full pl-10 pr-4 py-3 border rounded-2xl text-sm font-semibold transition-all bg-white border-slate-200 text-slate-800 focus:border-amber-500"
+                className="w-full pl-11 pr-4 py-3.5 border border-slate-200 rounded-2xl text-sm font-medium transition-all bg-white shadow-sm focus:border-slate-400 focus:ring-1 focus:ring-slate-400 focus:outline-none"
               />
-              <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+              <Search className={`w-4 h-4 absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 text-slate-400`} />
             </div>
             
             {/* View Mode Toggle Button */}
             <button
               onClick={() => setViewMode(settings.viewMode === 'cards' ? 'list' : 'cards')}
-              className="p-3 rounded-2xl border transition-all cursor-pointer shadow-sm border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
+              className="p-3.5 rounded-2xl border border-slate-200 transition-all cursor-pointer shadow-sm bg-white text-slate-500 hover:border-slate-300 hover:bg-slate-50"
               title={settings.viewMode === 'cards' ? t.classicListMode : t.modernCardMode}
             >
               {settings.viewMode === 'cards' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
@@ -309,19 +308,15 @@ export const Storefront: React.FC = () => {
           </div>
 
           {/* Categories Selector Carousel */}
-          <div className="flex gap-2 overflow-x-auto py-2 no-scrollbar justify-start sm:justify-center scroll-smooth">
+          <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar justify-start sm:justify-center scroll-smooth">
             {uniqueCategories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
-                style={{ 
-                  backgroundColor: selectedCategory === cat ? settings.primaryColor : undefined,
-                  borderColor: selectedCategory === cat ? settings.primaryColor : undefined
-                }}
-                className={`px-5 py-3 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
+                className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap cursor-pointer border ${
                   selectedCategory === cat
-                    ? 'text-white shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
                 {cat === 'All' ? t.categoryAll : cat}
@@ -330,10 +325,9 @@ export const Storefront: React.FC = () => {
             {hasHiddenCategories && (
               <button
                 onClick={() => setUpgradeOpen(true)}
-                className="px-5 py-3 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer border border-dashed border-amber-300 bg-amber-500/10 text-amber-700 flex items-center gap-1.5 hover:bg-amber-500/20"
-                title="أقسام إضافية متوفرة في النسخة المدفوعة"
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap cursor-pointer border border-dashed border-amber-200 bg-amber-50 text-amber-700 flex items-center gap-2 hover:bg-amber-100"
               >
-                <Lock className="w-3.5 h-3.5 text-amber-500" />
+                <Lock className="w-4 h-4" />
                 <span>{isRtl ? 'أقسام إضافية 🔒' : 'More Pages 🔒'}</span>
               </button>
             )}
@@ -373,68 +367,61 @@ export const Storefront: React.FC = () => {
               {filteredProducts.map(prod => (
                 <div 
                   key={prod.id} 
-                  className="border rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group transition-all hover:-translate-y-0.5 bg-white border-slate-200/60 hover:border-slate-300"
+                  className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col group"
                 >
                   <div>
                     {/* Item Image area */}
-                    <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden shrink-0 border-b">
+                    <div className="relative aspect-[16/10] overflow-hidden bg-slate-50">
                       {prod.image_url ? (
                         allowedImageProductIds.includes(prod.id) ? (
                           <img
                             src={prod.image_url}
                             alt={prod.name}
-                            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
                           <div 
-                            className="w-full h-full bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center text-center p-3 cursor-pointer hover:bg-amber-500/10 transition-colors"
+                            className="w-full h-full bg-slate-100 flex flex-col items-center justify-center text-center p-6 cursor-pointer hover:bg-amber-50 transition-colors"
                             onClick={() => setUpgradeOpen(true)}
                           >
-                            <Lock className="w-5 h-5 text-amber-500 mb-1 animate-bounce" />
-                            <span className="text-[10px] font-black text-amber-600 block px-1.5 py-0.5 rounded-md bg-amber-500/10">
-                              {isRtl ? 'صورة مقفلة (نسخة مدفوعة) 🔒' : 'Premium Image 🔒'}
-                            </span>
-                            <span className="text-[9px] text-slate-400 mt-1 block max-w-[150px] leading-tight">
-                              {isRtl ? 'الخطة المجانية تظهر 4 صور فقط' : 'Free plan limited to 4 images'}
+                            <Lock className="w-6 h-6 text-amber-400 mb-2" />
+                            <span className="text-xs font-bold text-amber-600">
+                              {isRtl ? 'صورة مقفلة 🔒' : 'Premium Image 🔒'}
                             </span>
                           </div>
                         )
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                          <ShoppingBag className="w-8 h-8" />
+                        <div className="w-full h-full flex items-center justify-center text-slate-300">
+                          <ShoppingBag className="w-10 h-10" />
                         </div>
                       )}
 
                       {/* Currency badge float */}
-                      <div className="absolute top-3 right-3 bg-white/95 border border-slate-200 px-3 py-1 rounded-full text-xs font-black shadow-sm text-amber-500">
+                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm border border-slate-100 px-3 py-1 rounded-full text-xs font-bold text-slate-900 shadow-sm">
                         {settings.currencySymbol}
                         {prod.price.toFixed(2)}
                       </div>
                     </div>
 
                     {/* Meta info area */}
-                    <div className="p-4 sm:p-5">
+                    <div className="p-5 flex-1">
                       <div className="mb-2">
-                        <span className="text-[9px] uppercase tracking-wider font-extrabold bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-0.5 rounded-full">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
                           {prod.category}
                         </span>
                       </div>
-                      <h3 className="font-bold text-sm sm:text-base leading-tight mb-2 text-slate-900">{prod.name}</h3>
-                      <p className="text-xs leading-relaxed line-clamp-3 text-slate-500">{prod.description}</p>
+                      <h3 className="font-bold text-base leading-snug mb-2 text-slate-950">{prod.name}</h3>
+                      <p className="text-sm leading-relaxed text-slate-500 line-clamp-2">{prod.description}</p>
                     </div>
                   </div>
 
                   {/* Add / Checkout Actions footer */}
-                  <div className="p-4 sm:p-5 pt-0 flex items-center gap-2">
+                  <div className="p-5 pt-0 flex items-center gap-2">
                     <button
                       onClick={() => handleAddToCart(prod)}
-                      style={{ 
-                        borderColor: settings.primaryColor,
-                        color: settings.primaryColor
-                      }}
-                      className="flex-1 border text-xs font-bold py-2.5 rounded-xl transition-all hover:bg-slate-100/50 flex items-center justify-center gap-1 cursor-pointer"
+                      className="flex-1 bg-slate-900 text-white text-sm font-bold py-3 rounded-xl transition-all hover:bg-slate-800 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-4 h-4" />
                       {t.addToCart}
                     </button>
                     
@@ -443,10 +430,10 @@ export const Storefront: React.FC = () => {
                       href={getWhatsAppLink(prod)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs p-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center"
+                      className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-sm p-3 rounded-xl transition-colors flex items-center justify-center"
                       title={t.orderNow}
                     >
-                      <MessageSquare className="w-4 h-4" />
+                      <MessageSquare className="w-5 h-5" />
                     </a>
                   </div>
                 </div>
@@ -464,11 +451,11 @@ export const Storefront: React.FC = () => {
                   </div>
 
                   {/* Category Items list */}
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-4">
                     {group.items.map(prod => (
                       <div 
                         key={prod.id} 
-                        className="p-4 sm:p-5 flex items-start gap-4 bg-white border border-slate-100 rounded-2xl shadow-sm hover:border-slate-200 transition-all"
+                        className="p-5 flex items-start gap-5 bg-white border border-slate-100 rounded-3xl shadow-sm hover:border-slate-200 transition-all"
                       >
                         {/* Compact thumbnail */}
                         {prod.image_url && (
@@ -476,51 +463,47 @@ export const Storefront: React.FC = () => {
                             <img 
                               src={prod.image_url} 
                               alt={prod.name} 
-                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl border border-slate-250 shadow-sm shrink-0" 
+                              className="w-20 h-20 object-cover rounded-2xl border border-slate-100 shadow-sm shrink-0" 
                             />
                           ) : (
                             <div 
                               onClick={() => setUpgradeOpen(true)}
-                              className="w-16 h-16 sm:w-20 sm:h-20 bg-slate-100 border border-amber-200/50 rounded-xl flex flex-col items-center justify-center text-center p-1 cursor-pointer hover:bg-amber-500/10 transition-colors shrink-0"
+                              className="w-20 h-20 bg-slate-50 border border-amber-100 rounded-2xl flex flex-col items-center justify-center text-center p-2 cursor-pointer hover:bg-amber-50 transition-colors shrink-0"
                               title="أنت في الخطة المجانية"
                             >
-                              <Lock className="w-4 h-4 text-amber-500" />
-                              <span className="text-[8px] text-amber-600 font-extrabold mt-1">
-                                {isRtl ? 'مقفل 🔒' : 'Locked 🔒'}
-                              </span>
+                              <Lock className="w-5 h-5 text-amber-400" />
                             </div>
                           )
                         )}
 
                         {/* Text and metadata layout */}
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-3 mb-1">
-                            <h3 className="font-bold text-sm sm:text-base text-slate-950">{prod.name}</h3>
-                            <span className="font-extrabold text-amber-500 text-sm sm:text-base shrink-0">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <h3 className="font-bold text-base text-slate-950 leading-tight">{prod.name}</h3>
+                            <span className="font-bold text-slate-950 shrink-0">
                               {settings.currencySymbol}
                               {prod.price.toFixed(2)}
                             </span>
                           </div>
                           
-                          <p className="text-xs leading-relaxed mb-3.5 line-clamp-2 text-slate-500">{prod.description}</p>
+                          <p className="text-sm leading-relaxed mb-4 text-slate-500 line-clamp-2">{prod.description}</p>
 
                           {/* Quick checkout */}
-                          <div className="flex flex-wrap items-center gap-2.5 mt-1">
+                          <div className="flex items-center gap-3">
                             <button
                               onClick={() => handleAddToCart(prod)}
-                              style={{ backgroundColor: settings.primaryColor }}
-                              className="text-white font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl shadow-sm flex items-center gap-1.5 hover:opacity-90 transition-opacity cursor-pointer min-h-[42px]"
+                              className="bg-slate-900 text-white text-sm font-bold px-5 py-2.5 rounded-xl hover:bg-slate-800 active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
                             >
-                              <Plus className="w-3.5 h-3.5" />
+                              <Plus className="w-4 h-4" />
                               {t.addToCart}
                             </button>
                             <a
                               href={getWhatsAppLink(prod)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="bg-emerald-50 text-emerald-700 font-bold text-xs sm:text-[11px] px-4.5 py-2.5 rounded-xl border border-emerald-200/50 flex items-center gap-1.5 transition-colors min-h-[42px]"
+                              className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold text-sm px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2"
                             >
-                              <MessageSquare className="w-3.5 h-3.5" />
+                              <MessageSquare className="w-4 h-4" />
                               {t.orderNow}
                             </a>
                           </div>

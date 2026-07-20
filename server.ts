@@ -590,9 +590,16 @@ function startTelegramLongPolling() {
   poll();
 }
 
-// For Vercel / Serverless, we export the app
-const appPromise = startServer();
-export default async (req: any, res: any) => {
+// For Vercel / Serverless, we export the app with lazy initialization
+let appPromise: Promise<express.Express> | null = null;
+export default async (req: express.Request, res: express.Response) => {
+  if (!appPromise) {
+    appPromise = startServer();
+  }
   const app = await appPromise;
   app(req, res);
 };
+
+if (!process.env.VERCEL) {
+  startServer();
+}
