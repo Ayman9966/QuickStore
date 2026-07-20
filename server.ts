@@ -207,31 +207,6 @@ async function startServer() {
     }
   });
 
-  // API Route: Get Store by Username (for subdomain routing)
-  app.get("/api/store/by-username", async (req, res) => {
-    try {
-      const { username } = req.query;
-      if (!username || typeof username !== "string") {
-        return res.status(400).json({ error: "Missing or invalid username" });
-      }
-
-      const store = await getStoreByUsername(username.toLowerCase());
-
-      if (!store) {
-        return res.status(404).json({ error: "Store not found" });
-      }
-
-      res.json({
-        settings: store.settings,
-        products: store.products,
-        isSubscribed: store.isSubscribed
-      });
-    } catch (error) {
-      console.error("By-username endpoint error:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-
   // API Route: Register / Sync Store
   app.post("/api/store/register", async (req, res) => {
     try {
@@ -377,20 +352,12 @@ async function startServer() {
   }
 
   // Listen on specified PORT and Host 0.0.0.0
-  if (!process.env.VERCEL) {
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(`Server running on http://0.0.0.0:${PORT}`);
-    });
-  }
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+  });
 
   // Start Telegram Bot Long Polling
-  if (!(process.env.NODE_ENV === "production" && process.env.VERCEL)) {
-    startTelegramLongPolling();
-  } else {
-    console.log("Running on Vercel - Telegram Long Polling disabled (serverless environment).");
-  }
-
-  return app;
+  startTelegramLongPolling();
 }
 
 // Telegram Bot Long Polling Logic
@@ -590,16 +557,4 @@ function startTelegramLongPolling() {
   poll();
 }
 
-// For Vercel / Serverless, we export the app with lazy initialization
-let appPromise: Promise<express.Express> | null = null;
-export default async (req: express.Request, res: express.Response) => {
-  if (!appPromise) {
-    appPromise = startServer();
-  }
-  const app = await appPromise;
-  app(req, res);
-};
-
-if (!process.env.VERCEL) {
-  startServer();
-}
+startServer();

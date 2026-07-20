@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
-  const { setView, products, settings, updateSettings, currentUser, logoutUser, adminUsername, getStoreUrl } = useStore();
+  const { setView, products, settings, updateSettings, currentUser, logoutUser, adminUsername } = useStore();
   const t = TRANSLATIONS[settings.language];
   const isRtl = settings.language === 'ar';
 
@@ -213,38 +213,6 @@ export const Dashboard: React.FC = () => {
                 <span className="text-[10px] text-slate-400 font-bold uppercase block tracking-wider">Currency</span>
                 <span className="font-extrabold text-lg sm:text-xl text-slate-900 leading-none">{settings.currencySymbol}</span>
               </div>
-            </div>
-          </div>
-
-          {/* Store URL Display */}
-          <div className="bg-slate-900 text-white rounded-2xl p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                <Home className="w-5 h-5 text-amber-400" />
-              </div>
-              <div>
-                <span className="text-[10px] text-white/50 font-bold uppercase tracking-wider block">Your Public Storefront URL</span>
-                <span className="text-sm font-mono text-amber-200 break-all">{getStoreUrl(currentUser)}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(getStoreUrl(currentUser));
-                  alert(isRtl ? '📋 تم نسخ رابط المتجر!' : '📋 Store URL copied!');
-                }}
-                className="flex-1 sm:flex-none bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer border border-white/5"
-              >
-                Copy Link
-              </button>
-              <a
-                href={getStoreUrl(currentUser)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 sm:flex-none bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5"
-              >
-                Visit Store
-              </a>
             </div>
           </div>
 
