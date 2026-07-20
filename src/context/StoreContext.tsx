@@ -45,12 +45,12 @@ const slugify = (text: string) => {
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [view, setView] = useState<AppView>(() => {
-    const hostname = window.location.hostname;
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('view');
     
-    // Check if we are on a user sub-subdomain: store.user.yourdomain.com
-    if (hostname.endsWith(`.${BASE_DOMAIN}`) && hostname.split('.').length >= 3) {
+    // Check if we are on a user path: yourdomain.com/storename/username
+    if (pathParts.length >= 2) {
       return 'customer';
     }
 
@@ -58,27 +58,23 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return 'landing';
   });
 
-  // Extract username from hostname if on subdomain
-  const getSubdomainUsername = () => {
-    const hostname = window.location.hostname;
-    if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
-      const parts = hostname.replace(`.${BASE_DOMAIN}`, '').split('.');
-      // Structure: [storename, username] or just [username]
-      if (parts.length >= 2) return parts[1];
-      if (parts.length === 1) return parts[0];
-    }
+  // Extract username from pathname
+  const getPathnameUsername = () => {
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    // Structure: [storename, username]
+    if (pathParts.length >= 2) return pathParts[1];
     return null;
   };
   
   // Load initial state from localStorage
   const [products, setProducts] = useState<Product[]>(() => {
-    if (getSubdomainUsername()) return []; // Will load from server
+    if (getPathnameUsername()) return []; // Will load from server
     const saved = localStorage.getItem('quickstore_products');
     return saved ? JSON.parse(saved) : [];
   });
 
   const [settings, setSettings] = useState<StoreSettings>(() => {
-    if (getSubdomainUsername()) return { ...DEFAULT_SETTINGS, storeId: '' }; // Will load from server
+    if (getPathnameUsername()) return { ...DEFAULT_SETTINGS, storeId: '' }; // Will load from server
     const saved = localStorage.getItem('quickstore_settings');
     const parsed = saved ? JSON.parse(saved) : { ...DEFAULT_SETTINGS };
     if (!parsed.storeId) {
@@ -100,9 +96,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Load store data from server if on a subdomain
   useEffect(() => {
-    const subdomainUser = getSubdomainUsername();
-    if (subdomainUser) {
-      fetch(`/api/store/by-username?username=${subdomainUser}`)
+    const username = getPathnameUsername();
+    if (username) {
+      fetch(`/api/store/by-username?username=${username}`)
         .then(res => res.json())
         .then(data => {
           if (data && data.settings) {
@@ -112,7 +108,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             }
           }
         })
-        .catch(err => console.error('Error loading store by subdomain:', err));
+        .catch(err => console.error('Error loading store by path:', err));
     }
   }, []);
 
@@ -300,7 +296,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getStoreUrl = (username: string | null) => {
     if (username) {
       const storeSlug = slugify(settings.storeName || 'store');
-      return `https://${storeSlug}.${username}.${BASE_DOMAIN}`;
+      return `https://${BASE_DOMAIN}/${storeSlug}/${username}`;
     }
     // Fallback if no username provided (e.g. for preview before login)
     return `${window.location.origin}?view=customer`;
