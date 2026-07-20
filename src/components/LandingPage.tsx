@@ -247,7 +247,7 @@ export const LandingPage: React.FC = () => {
                 <div className="w-3 h-3 rounded-full bg-rose-400" />
                 <div className="w-3 h-3 rounded-full bg-amber-400" />
                 <div className="w-3 h-3 rounded-full bg-emerald-400" />
-                <span className="text-xs text-slate-400 font-mono ml-2">my-cafe.subdomain.mydomain.com</span>
+                <span className="text-xs text-slate-400 font-mono ml-2">bellavista.aymaan.yourdomain.com</span>
               </div>
               <div className="bg-slate-50 border border-slate-200 text-[10px] text-slate-500 font-medium px-2 py-0.5 rounded-md flex items-center gap-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

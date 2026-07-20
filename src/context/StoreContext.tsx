@@ -31,7 +31,17 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 // Define the base platform domain
-const BASE_DOMAIN = 'subdomain.mydomain.com';
+const BASE_DOMAIN = 'yourdomain.com';
+
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')     // Replace spaces with -
+    .replace(/[^\w-]+/g, '')  // Remove all non-word chars
+    .replace(/--+/g, '-');    // Replace multiple - with single -
+};
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [view, setView] = useState<AppView>(() => {
@@ -39,8 +49,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const params = new URLSearchParams(window.location.search);
     const mode = params.get('view');
     
-    // Check if we are on a user subdomain: username.subdomain.mydomain.com
-    if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
+    // Check if we are on a user sub-subdomain: store.user.yourdomain.com
+    if (hostname.endsWith(`.${BASE_DOMAIN}`) && hostname.split('.').length >= 3) {
       return 'customer';
     }
 
@@ -52,7 +62,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getSubdomainUsername = () => {
     const hostname = window.location.hostname;
     if (hostname.endsWith(`.${BASE_DOMAIN}`)) {
-      return hostname.replace(`.${BASE_DOMAIN}`, '');
+      const parts = hostname.replace(`.${BASE_DOMAIN}`, '').split('.');
+      // Structure: [storename, username] or just [username]
+      if (parts.length >= 2) return parts[1];
+      if (parts.length === 1) return parts[0];
     }
     return null;
   };
@@ -286,7 +299,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // URL Helper for store
   const getStoreUrl = (username: string | null) => {
     if (username) {
-      return `https://${username}.${BASE_DOMAIN}`;
+      const storeSlug = slugify(settings.storeName || 'store');
+      return `https://${storeSlug}.${username}.${BASE_DOMAIN}`;
     }
     // Fallback if no username provided (e.g. for preview before login)
     return `${window.location.origin}?view=customer`;

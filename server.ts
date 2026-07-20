@@ -377,9 +377,11 @@ async function startServer() {
   }
 
   // Listen on specified PORT and Host 0.0.0.0
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://0.0.0.0:${PORT}`);
-  });
+  if (!process.env.VERCEL) {
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Server running on http://0.0.0.0:${PORT}`);
+    });
+  }
 
   // Start Telegram Bot Long Polling
   if (!(process.env.NODE_ENV === "production" && process.env.VERCEL)) {
