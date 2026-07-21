@@ -149,10 +149,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-      const data = await response.json();
+      
       if (!response.ok) {
-        return { success: false, error: data.error || 'Registration failed' };
+        const errorData = await response.text();
+        return { success: false, error: errorData || 'Registration failed' };
       }
+      
+      const data = await response.json();
       
       setCurrentUser(userData.username.trim().toLowerCase());
       
@@ -197,10 +200,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
-      const data = await response.json();
+      
       if (!response.ok) {
-        return { success: false, error: data.error || 'Login failed' };
+        const errorData = await response.text();
+        return { success: false, error: errorData || 'Login failed' };
       }
+      
+      const data = await response.json();
       
       setCurrentUser(userData.username.trim().toLowerCase());
       
