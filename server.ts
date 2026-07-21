@@ -9,7 +9,7 @@ let supabaseClient: SupabaseClient | null = null;
 function getSupabase(): SupabaseClient {
   if (!supabaseClient) {
     const url = process.env.VITE_SUPABASE_URL;
-    const key = process.env.SUPABASE_SECRET_KEY;
+    const key = process.env.SUPABASE_SECRET_KEY || process.env.VITE_SUPABASE_ANON_KEY;
     if (!url || !key) {
       throw new Error('Supabase environment variables are required');
     }
@@ -136,7 +136,10 @@ async function startServer() {
       });
     } catch (error: any) {
       console.error("Sign up endpoint error:", error);
-      res.status(500).json({ error: error.message || "Internal server error" });
+      res.status(500).json({ 
+        error: error.message || "Internal server error",
+        details: typeof error === 'object' ? error : String(error)
+      });
     }
   });
 
