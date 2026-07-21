@@ -3,6 +3,9 @@ import path from "path";
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient('https://ltloscarjmoxvlxraqge.supabase.co', 'sb_secret_wqLZ_SBqJdTQAsstqe-Wjw_XxmZmHl1');
 
 const PORT = 3000;
 
@@ -94,6 +97,31 @@ async function startServer() {
       database: "local",
       timestamp: new Date().toISOString()
     });
+  });
+
+  // API Route: CRUD for stores
+  app.get("/api/stores", async (req, res) => {
+    const { data, error } = await supabase.from('stores').select('*');
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  });
+
+  app.post("/api/stores", async (req, res) => {
+    const { data, error } = await supabase.from('stores').insert(req.body);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  });
+
+  app.put("/api/stores/:id", async (req, res) => {
+    const { data, error } = await supabase.from('stores').update(req.body).eq('id', req.params.id);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
+  });
+
+  app.delete("/api/stores/:id", async (req, res) => {
+    const { data, error } = await supabase.from('stores').delete().eq('id', req.params.id);
+    if (error) return res.status(500).json({ error: error.message });
+    res.json(data);
   });
 
   // API Route: platform Sign Up / Register Account
