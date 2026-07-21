@@ -3,6 +3,9 @@ import path from "path";
 import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 let supabaseClient: SupabaseClient | null = null;
 
