@@ -1,28 +1,20 @@
 import React from 'react';
-import { StoreProvider, useStore } from './context/StoreContext';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { StoreProvider } from './context/StoreContext';
 import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
 import { Storefront } from './components/Storefront';
 
-function AppContent() {
-  const { view } = useStore();
-
-  switch (view) {
-    case 'landing':
-      return <LandingPage />;
-    case 'builder':
-      return <Dashboard />;
-    case 'customer':
-      return <Storefront />;
-    default:
-      return <LandingPage />;
-  }
-}
-
 export default function App() {
   return (
     <StoreProvider>
-      <AppContent />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/:restaurantId" element={<Storefront />} />
+          <Route path="/:restaurantId/admin" element={<Dashboard />} />
+        </Routes>
+      </BrowserRouter>
     </StoreProvider>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../context/StoreContext';
+import { useParams, useNavigate } from 'react-router-dom';
 import { TRANSLATIONS } from '../data/translations';
 import { Product, CartItem } from '../types';
 import { 
@@ -24,6 +25,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export const Storefront: React.FC = () => {
+  const { restaurantId } = useParams();
+  const navigate = useNavigate();
   const { 
     products, 
     settings, 
@@ -34,7 +37,6 @@ export const Storefront: React.FC = () => {
     clearCart, 
     getWhatsAppLink,
     updateSettings,
-    setView,
     view
   } = useStore();
 
@@ -88,7 +90,7 @@ export const Storefront: React.FC = () => {
         if (enteredPasscode === (settings.adminPasscode || '1234')) {
           setPasscodeOpen(false);
           setEnteredPasscode('');
-          setView('builder');
+          navigate(`/${restaurantId}/admin`);
         } else {
           setPasscodeError(true);
           const shakeDelay = setTimeout(() => {
@@ -100,7 +102,7 @@ export const Storefront: React.FC = () => {
       }, 150);
       return () => clearTimeout(delay);
     }
-  }, [enteredPasscode, settings.adminPasscode, setView]);
+  }, [enteredPasscode, settings.adminPasscode, navigate, restaurantId]);
 
   useEffect(() => {
     fetch('/api/telegram/bot-info')
@@ -195,53 +197,61 @@ export const Storefront: React.FC = () => {
       className="min-h-screen font-sans transition-colors duration-250 bg-slate-50 text-slate-800"
     >
       {/* Customer Header */}
-      <header className="sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors border-b bg-white/90 border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-slate-200/60">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             {/* Store logo */}
             {settings.logoUrl ? (
-              <img 
-                src={settings.logoUrl} 
-                alt={settings.storeName}
-                className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-sm shrink-0"
-              />
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-tr from-amber-500 to-orange-400 rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-300"></div>
+                <img 
+                  src={settings.logoUrl} 
+                  alt={settings.storeName}
+                  className="relative w-11 h-11 rounded-2xl object-cover border border-slate-100 shadow-sm shrink-0"
+                />
+              </div>
             ) : (
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shadow-sm shrink-0 select-none">
-                <ShoppingBag className="w-5 h-5" />
+              <div className="w-11 h-11 rounded-2xl bg-slate-900 text-white flex items-center justify-center shadow-lg shadow-slate-200 shrink-0">
+                <ShoppingBag className="w-5.5 h-5.5" />
               </div>
             )}
-            <div>
-              <h1 className="font-black tracking-tight text-base sm:text-lg text-slate-950">{settings.storeName}</h1>
-              <p className="text-[10px] sm:text-xs font-semibold text-slate-500">
-                {settings.businessType === 'food' ? '🍽️ Cafe & Bistro' : '🛍️ Retail Outlet'}
-              </p>
+            <div className="flex flex-col">
+              <h1 className="font-black tracking-tight text-slate-950 text-base sm:text-lg leading-none mb-1">
+                {settings.storeName}
+              </h1>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                  {settings.businessType === 'food' ? 'Store Open' : 'Direct Catalog'}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Quick Controls */}
-          <div className="flex items-center gap-2.5">
-            {/* Language Toggle */}
+          <div className="flex items-center gap-3">
             <button
               onClick={toggleLanguage}
-              className="p-2.5 sm:p-3 rounded-xl border border-slate-200 hover:bg-slate-100 transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-bold text-slate-750"
-              title="Change Language"
+              className="hidden sm:flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-100 text-slate-600 hover:text-slate-900 transition-all font-bold text-xs active:scale-95 cursor-pointer"
             >
-              <Globe className="w-4.5 h-4.5 text-amber-500" />
-              <span className="hidden sm:inline">{settings.language === 'en' ? 'العربية' : 'English'}</span>
+              <Globe className="w-4 h-4 text-amber-500" />
+              <span>{settings.language === 'en' ? 'العربية' : 'English'}</span>
             </button>
-
-            {/* Cart Button */}
+            
             <button
               onClick={() => setCartOpen(true)}
-              style={{ backgroundColor: settings.primaryColor }}
-              className="text-white p-2.5 sm:p-3 rounded-xl shadow-md font-extrabold flex items-center gap-1.5 cursor-pointer relative shrink-0 transition-opacity hover:opacity-90"
+              className="bg-slate-950 text-white p-2.5 sm:px-5 sm:py-3 rounded-2xl shadow-xl hover:shadow-slate-200 transition-all active:scale-95 flex items-center gap-2.5 cursor-pointer group"
             >
-              <ShoppingBag className="w-4.5 h-4.5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white ring-1 ring-red-500/10">
-                  {cartCount}
-                </span>
-              )}
+              <div className="relative">
+                <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2.5 -right-2.5 bg-amber-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-slate-950">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <span className="hidden sm:inline font-bold text-xs uppercase tracking-wider">
+                Cart {cartTotal > 0 && `· ${settings.currencySymbol}${cartTotal.toFixed(2)}`}
+              </span>
             </button>
           </div>
         </div>
@@ -288,21 +298,24 @@ export const Storefront: React.FC = () => {
       {/* Main Content Area */}
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Search and Categories bar */}
-        <div className="space-y-4 mb-8">
-          <div className="flex items-center gap-2 max-w-md mx-auto">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder={t.searchPlaceholder}
-                className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-2xl text-sm font-semibold transition-all bg-white text-slate-800 focus:border-amber-500"
-              />
-              <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-3.5' : 'left-3.5'} top-1/2 -translate-y-1/2 text-slate-400`} />
+        <div className="space-y-6 mb-12">
+          <div className="flex items-center gap-3 max-w-2xl mx-auto">
+            <div className="relative flex-1 group">
+              <div className="absolute inset-0 bg-slate-200/50 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+              <div className="relative flex items-center">
+                <Search className={`w-4.5 h-4.5 absolute ${isRtl ? 'right-4' : 'left-4'} text-slate-400 group-focus-within:text-slate-900 transition-colors`} />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder={t.searchPlaceholder}
+                  className="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-400"
+                />
+              </div>
             </div>
             <button
               onClick={() => setViewMode(settings.viewMode === 'cards' ? 'list' : 'cards')}
-              className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-600 hover:text-slate-900 transition-colors cursor-pointer"
+              className="p-4 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-slate-900 transition-all cursor-pointer hover:border-slate-900 active:scale-90 shadow-soft"
               title={settings.viewMode === 'cards' ? t.classicListMode : t.modernCardMode}
             >
               {settings.viewMode === 'cards' ? <List className="w-5 h-5" /> : <LayoutGrid className="w-5 h-5" />}
@@ -310,34 +323,31 @@ export const Storefront: React.FC = () => {
           </div>
 
           {/* Categories Selector Carousel */}
-          <div className="flex gap-2 overflow-x-auto py-2 no-scrollbar justify-start sm:justify-center scroll-smooth">
-            {uniqueCategories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                style={{ 
-                  backgroundColor: selectedCategory === cat ? settings.primaryColor : undefined,
-                  borderColor: selectedCategory === cat ? settings.primaryColor : undefined
-                }}
-                className={`px-5 py-3 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer border ${
-                  selectedCategory === cat
-                    ? 'text-white shadow-sm'
-                    : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                {cat === 'All' ? t.categoryAll : cat}
-              </button>
-            ))}
-            {hasHiddenCategories && (
-              <button
-                onClick={() => setUpgradeOpen(true)}
-                className={`px-5 py-3 rounded-full text-sm sm:text-xs font-bold transition-all whitespace-nowrap cursor-pointer border border-dashed border-amber-300 dark:border-amber-900/60 bg-amber-500/10 text-amber-700 dark:text-amber-400 flex items-center gap-1.5 hover:bg-amber-500/20`}
-                title="أقسام إضافية متوفرة في النسخة المدفوعة"
-              >
-                <Lock className="w-3.5 h-3.5 text-amber-500" />
-                <span>{isRtl ? 'أقسام إضافية 🔒' : 'More Pages 🔒'}</span>
-              </button>
-            )}
+          <div className="sticky top-20 z-20 py-2 bg-slate-50/80 backdrop-blur-md -mx-4 px-4">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start sm:justify-center scroll-smooth pb-1">
+              {uniqueCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap cursor-pointer border ${
+                    selectedCategory === cat
+                      ? 'bg-slate-900 border-slate-900 text-white shadow-xl shadow-slate-200 scale-105'
+                      : 'border-slate-200 bg-white text-slate-500 hover:text-slate-900 hover:border-slate-400'
+                  }`}
+                >
+                  {cat === 'All' ? t.categoryAll : cat}
+                </button>
+              ))}
+              {hasHiddenCategories && (
+                <button
+                  onClick={() => setUpgradeOpen(true)}
+                  className="px-6 py-3 rounded-2xl text-xs font-black transition-all whitespace-nowrap cursor-pointer border border-dashed border-amber-300 bg-amber-50 text-amber-700 flex items-center gap-2 hover:bg-amber-100"
+                >
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>{isRtl ? 'المزيد 🔒' : 'More 🔒'}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -370,87 +380,84 @@ export const Storefront: React.FC = () => {
           /* Swappable Product grid/list displays */
           settings.viewMode === 'cards' ? (
             /* CARDS VIEW */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map(prod => (
-                <div 
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+              {filteredProducts.map((prod, idx) => (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: (idx % 3) * 0.1 }}
                   key={prod.id} 
-                  className="border border-slate-200/60 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group transition-all hover:-translate-y-0.5 bg-white hover:border-slate-300"
+                  className="bg-white rounded-[32px] overflow-hidden border border-slate-200/60 hover:border-slate-900/10 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] transition-all group flex flex-col"
                 >
-                  <div>
-                    {/* Item Image area */}
-                    <div className="aspect-[16/10] bg-slate-100 relative overflow-hidden shrink-0 border-b border-slate-200">
-                      {prod.image_url ? (
-                        allowedImageProductIds.includes(prod.id) ? (
-                          <img
-                            src={prod.image_url}
-                            alt={prod.name}
-                            className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-300"
-                          />
-                        ) : (
-                          <div 
-                            className="w-full h-full bg-slate-900/10 backdrop-blur-xs flex flex-col items-center justify-center text-center p-3 cursor-pointer hover:bg-amber-500/10 transition-colors"
-                            onClick={() => setUpgradeOpen(true)}
-                          >
-                            <Lock className="w-5 h-5 text-amber-500 mb-1 animate-bounce" />
-                            <span className="text-[10px] font-black text-amber-600 block px-1.5 py-0.5 rounded-md bg-amber-500/10">
-                              {isRtl ? 'صورة مقفلة (نسخة مدفوعة) 🔒' : 'Premium Image 🔒'}
-                            </span>
-                            <span className="text-[9px] text-slate-400 mt-1 block max-w-[150px] leading-tight">
-                              {isRtl ? 'الخطة المجانية تظهر 4 صور فقط' : 'Free plan limited to 4 images'}
-                            </span>
-                          </div>
-                        )
+                  {/* Item Image area */}
+                  <div className="aspect-[11/10] bg-slate-50 relative overflow-hidden shrink-0">
+                    {prod.image_url ? (
+                      allowedImageProductIds.includes(prod.id) ? (
+                        <img
+                          src={prod.image_url}
+                          alt={prod.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                          <ShoppingBag className="w-8 h-8" />
+                        <div 
+                          className="w-full h-full bg-slate-200/30 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 cursor-pointer hover:bg-amber-50 transition-colors"
+                          onClick={() => setUpgradeOpen(true)}
+                        >
+                          <Lock className="w-8 h-8 text-amber-500 mb-2 opacity-50" />
+                          <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest px-3 py-1 bg-amber-100 rounded-lg">
+                            Premium Image
+                          </span>
                         </div>
-                      )}
-
-                      {/* Currency badge float */}
-                      <div className="absolute top-3 right-3 bg-white/95 border border-slate-200 px-3 py-1 rounded-full text-xs font-black shadow-sm text-amber-500">
-                        {settings.currencySymbol}
-                        {prod.price.toFixed(2)}
+                      )
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center text-slate-200">
+                        <ShoppingBag className="w-12 h-12" />
                       </div>
-                    </div>
+                    )}
 
-                    {/* Meta info area */}
-                    <div className="p-4 sm:p-5">
-                      <div className="mb-2">
-                        <span className="text-[9px] uppercase tracking-wider font-extrabold bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-0.5 rounded-full">
-                          {prod.category}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-sm sm:text-base leading-tight mb-2 text-slate-900">{prod.name}</h3>
-                      <p className="text-xs leading-relaxed line-clamp-3 text-slate-500">{prod.description}</p>
+                    {/* Price float */}
+                    <div className="absolute bottom-4 right-4 bg-slate-950 text-white px-4 py-2 rounded-2xl text-sm font-black shadow-xl">
+                      {settings.currencySymbol}{prod.price.toFixed(2)}
                     </div>
                   </div>
 
-                  {/* Add / Checkout Actions footer */}
-                  <div className="p-4 pt-0 flex items-center gap-2">
-                    <button
-                      onClick={() => handleAddToCart(prod)}
-                      style={{ 
-                        borderColor: settings.primaryColor,
-                        color: settings.primaryColor
-                      }}
-                      className="flex-1 border text-xs font-bold py-2.5 rounded-xl transition-all hover:bg-slate-100/50 flex items-center justify-center gap-1 cursor-pointer"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      {t.addToCart}
-                    </button>
-                    
-                    {/* Instant Direct Order on WhatsApp button */}
-                    <a
-                      href={getWhatsAppLink(prod)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs p-2.5 rounded-xl transition-colors shadow-sm flex items-center justify-center"
-                      title={t.orderNow}
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                    </a>
+                  {/* Meta info area */}
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-[9px] uppercase tracking-[0.1em] font-black text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">
+                        {prod.category}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-lg leading-tight mb-2 text-slate-950 group-hover:text-slate-900 transition-colors">
+                      {prod.name}
+                    </h3>
+                    <p className="text-xs leading-relaxed text-slate-500 line-clamp-3 mb-6 flex-1">
+                      {prod.description}
+                    </p>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 mt-auto">
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className="flex-1 bg-slate-50 hover:bg-slate-950 hover:text-white text-slate-950 border border-slate-200 hover:border-slate-950 font-black text-xs py-3.5 rounded-2xl transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer shadow-soft"
+                      >
+                        <Plus className="w-4 h-4" />
+                        {t.addToCart}
+                      </button>
+                      
+                      <a
+                        href={getWhatsAppLink(prod)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-emerald-500 hover:bg-emerald-600 text-white p-3.5 rounded-2xl transition-all active:scale-90 shadow-lg shadow-emerald-500/10 shrink-0"
+                        title={t.orderNow}
+                      >
+                        <MessageSquare className="w-4.5 h-4.5" />
+                      </a>
+                    </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : (
@@ -560,74 +567,92 @@ export const Storefront: React.FC = () => {
             {/* Backdrop lock */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setCartOpen(false)}
-              className={`fixed top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full max-w-md z-50 border-t sm:border-t-0 shadow-2xl flex flex-col justify-between bg-white border-slate-200 text-slate-800`}
+              className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-[100]"
+            />
+            <motion.div
+              initial={{ x: isRtl ? -400 : 400 }}
+              animate={{ x: 0 }}
+              exit={{ x: isRtl ? -400 : 400 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className={`fixed top-0 bottom-0 ${isRtl ? 'left-0' : 'right-0'} w-full max-w-md z-[110] shadow-2xl flex flex-col justify-between bg-white`}
             >
               {/* Drawer head */}
-              <div className="px-5 py-4 border-b flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-amber-500" />
-                  <h4 className="font-extrabold text-slate-900 text-base">{t.shoppingCart}</h4>
-                  <span className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">
-                    {cartCount} items
-                  </span>
+              <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center">
+                    <ShoppingBag className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <h4 className="font-black text-slate-950 text-base">{t.shoppingCart}</h4>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{cartCount} items selected</p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setCartOpen(false)}
-                  className="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-10 h-10 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-950 flex items-center justify-center transition-all active:scale-90 cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Items List */}
-              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 {cart.length === 0 ? (
                   <div className="text-center py-24 flex flex-col items-center justify-center">
-                    <ShoppingBag className="w-12 h-12 text-slate-200 mb-3" />
-                    <p className="text-sm font-semibold text-slate-400">{t.cartEmpty}</p>
+                    <div className="w-20 h-20 rounded-[32px] bg-slate-50 flex items-center justify-center mb-6">
+                      <ShoppingBag className="w-10 h-10 text-slate-200" />
+                    </div>
+                    <h5 className="font-bold text-slate-900 mb-1">{t.cartEmpty}</h5>
+                    <p className="text-xs text-slate-400 max-w-[200px]">Looks like you haven't added anything to your order yet.</p>
                   </div>
                 ) : (
                   cart.map(item => (
-                    <div 
+                    <motion.div 
+                      layout
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
                       key={item.product.id} 
-                      className="flex items-start gap-3.5 pb-4 border-b border-slate-100"
+                      className="flex items-start gap-4 pb-6 border-b border-slate-50 group"
                     >
-                      {item.product.image_url && (
+                      {item.product.image_url ? (
                         <img 
                           src={item.product.image_url} 
                           alt={item.product.name} 
-                          className="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm shrink-0" 
+                          className="w-16 h-16 object-cover rounded-2xl border border-slate-100 shadow-sm shrink-0" 
                         />
+                      ) : (
+                        <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center shrink-0 border border-slate-100">
+                          <ShoppingBag className="w-6 h-6 text-slate-200" />
+                        </div>
                       )}
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h5 className="font-bold text-slate-900 text-xs truncate leading-tight">{item.product.name}</h5>
-                          <span className="font-bold text-xs shrink-0 text-slate-900">
-                            {settings.currencySymbol}
-                            {(item.product.price * item.quantity).toFixed(2)}
+                        <div className="flex items-start justify-between gap-3 mb-1">
+                          <h5 className="font-bold text-slate-950 text-sm truncate leading-tight group-hover:text-amber-600 transition-colors">{item.product.name}</h5>
+                          <span className="font-black text-sm shrink-0 text-slate-950">
+                            {settings.currencySymbol}{(item.product.price * item.quantity).toFixed(2)}
                           </span>
                         </div>
-                        <span className="text-[10px] text-slate-400 block mt-0.5">{settings.currencySymbol}{item.product.price.toFixed(2)} each</span>
+                        <span className="text-[10px] font-bold text-slate-400 block mb-3 uppercase tracking-wider">
+                          {settings.currencySymbol}{item.product.price.toFixed(2)} / unit
+                        </span>
 
                         {/* Quantity manipulators */}
-                        <div className="flex items-center gap-3 mt-2.5">
-                          <div className="p-1 border border-slate-200 rounded-xl flex items-center gap-2 bg-slate-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-xl border border-slate-100">
                             <button
                               onClick={() => updateCartQuantity(item.product.id, item.quantity - 1)}
-                              className="p-2 rounded-lg hover:bg-slate-250 text-slate-600 cursor-pointer active:scale-90 transition-transform"
-                              aria-label="Decrease quantity"
+                              className="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer active:scale-90"
                             >
                               <Minus className="w-4 h-4" />
                             </button>
-                            <span className="text-sm font-bold w-5 text-center text-slate-800">{item.quantity}</span>
+                            <span className="text-xs font-black w-8 text-center text-slate-900">{item.quantity}</span>
                             <button
                               onClick={() => updateCartQuantity(item.product.id, item.quantity + 1)}
-                              className="p-2 rounded-lg hover:bg-slate-250 text-slate-600 cursor-pointer active:scale-90 transition-transform"
-                              aria-label="Increase quantity"
+                              className="w-8 h-8 rounded-lg hover:bg-white hover:shadow-sm text-slate-400 hover:text-slate-900 flex items-center justify-center transition-all cursor-pointer active:scale-90"
                             >
                               <Plus className="w-4 h-4" />
                             </button>
@@ -635,47 +660,50 @@ export const Storefront: React.FC = () => {
 
                           <button
                             onClick={() => removeFromCart(item.product.id)}
-                            className="text-xs font-bold text-rose-600 hover:underline cursor-pointer p-1"
+                            className="w-8 h-8 rounded-xl text-slate-300 hover:text-rose-500 hover:bg-rose-50 transition-all flex items-center justify-center cursor-pointer"
                           >
-                            Remove
+                            <X className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   ))
                 )}
               </div>
 
               {/* Checkout Foot summary */}
               {cart.length > 0 && (
-                <div className="p-5 border-t bg-slate-50/50 space-y-4">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>{t.subtotal}</span>
-                      <span>{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
+                <div className="p-6 border-t border-slate-100 bg-white space-y-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t.subtotal}</span>
+                      <span className="text-sm font-black text-slate-950">{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm font-extrabold text-slate-900">
-                      <span>{t.total}</span>
-                      <span>{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
+                    <div className="h-px bg-slate-50 w-full" />
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-black text-slate-950 uppercase tracking-widest">{t.total}</span>
+                      <span className="text-xl font-black text-amber-500">{settings.currencySymbol}{cartTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
-                  <a
-                    href={getWhatsAppLink(cart)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm py-4 rounded-2xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                    <span>{t.sendOrder}</span>
-                  </a>
+                  <div className="space-y-3">
+                    <a
+                      href={getWhatsAppLink(cart)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm py-4.5 rounded-[20px] transition-all shadow-xl shadow-emerald-500/10 flex items-center justify-center gap-3 active:scale-[0.98] cursor-pointer"
+                    >
+                      <MessageSquare className="w-5 h-5" />
+                      <span>{t.sendOrder}</span>
+                    </a>
 
-                  <button
-                    onClick={clearCart}
-                    className="w-full text-center text-[10px] text-slate-400 hover:text-slate-500 hover:underline cursor-pointer"
-                  >
-                    Clear Order Cart
-                  </button>
+                    <button
+                      onClick={clearCart}
+                      className="w-full text-center text-[10px] font-black text-slate-300 hover:text-slate-900 uppercase tracking-widest transition-colors py-2 cursor-pointer"
+                    >
+                      Clear Order Cart
+                    </button>
+                  </div>
                 </div>
               )}
             </motion.div>

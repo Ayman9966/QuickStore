@@ -1,27 +1,66 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
-import { 
-  initFirebase, 
-  getAllStores, 
-  getStoreById, 
-  getStoreByUsername, 
-  saveStore, 
-  updateStoreLastActive,
-  StoreRecord 
-} from "./firebase-db";
 
 const PORT = 3000;
-
-// Initialize Firebase with fallback support
-initFirebase();
 
 // Default Telegram credentials (user provided)
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "7573867584:AAE4B4kDxPkTCCk85X7SeW9UyHim8DNuSkA";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "7579384719";
 const TELEGRAM_ADMIN_USERNAME = process.env.TELEGRAM_ADMIN_USERNAME || "aymaansamy96";
 
+// Simple file-based storage for persistence
+const DB_FILE = path.join(process.cwd(), 'stores.json');
+
+function getStores(): any[] {
+  if (!fs.existsSync(DB_FILE)) return [];
+  return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+}
+
+function getAllStores(): any[] {
+  return getStores();
+}
+
+function saveStores(stores: any[]) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(stores, null, 2));
+}
+
+function getStoreById(storeId: string) {
+  return getStores().find(s => s.storeId === storeId);
+}
+
+function getStoreByUsername(username: string) {
+  return getStores().find(s => s.username === username);
+}
+
+function saveStore(store: any) {
+  const stores = getStores();
+  const index = stores.findIndex(s => s.storeId === store.storeId);
+  if (index !== -1) {
+    stores[index] = store;
+  } else {
+    stores.push(store);
+  }
+  saveStores(stores);
+}
+
+interface StoreRecord {
+  storeId: string;
+  username: string;
+  password?: string;
+  storeName: string;
+  whatsappNumber: string;
+  businessType: string;
+  language: string;
+  isSubscribed: boolean;
+  subscriptionEndDate?: string;
+  registeredAt: string;
+  lastActiveAt: string;
+  settings: any;
+  products: any[];
+}
 
 // Telegram Helper to Send Message
 async function sendTelegramMessage(chatId: string, text: string) {
@@ -48,6 +87,15 @@ async function startServer() {
   const app = express();
   app.use(express.json());
 
+  // API Route: Health check for database
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "ok",
+      database: "local",
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // API Route: platform Sign Up / Register Account
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -64,10 +112,14 @@ async function startServer() {
       }
 
       const storeId = `store-${Math.floor(100000 + Math.random() * 900000)}`;
+      
+      // Hash the password for security
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       const newStore: StoreRecord = {
         storeId,
         username: trimmedUsername,
-        password, // Simple text storage is fine for this demo
+        password: hashedPassword,
         storeName: storeName || "Unnamed Store",
         whatsappNumber: whatsappNumber || "",
         businessType: businessType || "retail",
@@ -137,7 +189,7 @@ async function startServer() {
       const trimmedUsername = username.trim().toLowerCase();
       const store = await getStoreByUsername(trimmedUsername);
 
-      if (!store || store.password !== password) {
+      if (!store || !(await bcrypt.compare(password, store.password || ""))) {
         return res.status(401).json({ error: "Invalid username or password" });
       }
 

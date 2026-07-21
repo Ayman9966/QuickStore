@@ -97,29 +97,32 @@ export const CatalogManager: React.FC = () => {
   return (
     <div className="space-y-6" id="catalog-manager-container">
       {/* Search, Filter & Actions Top Bar */}
-      <div className="bg-white border border-slate-200/60 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/60 rounded-[24px] p-6 shadow-soft flex flex-col lg:flex-row items-center justify-between gap-6">
         {/* Search Input */}
-        <div className="relative w-full md:max-w-xs">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t.searchPlaceholder}
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500/10 focus:border-amber-500 transition-all text-slate-700"
-          />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+        <div className="relative w-full lg:max-w-md group">
+          <div className="absolute inset-0 bg-slate-900/5 rounded-2xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity" />
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 text-slate-400 absolute left-4 group-focus-within:text-slate-900 transition-colors" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-wider focus:outline-none focus:border-slate-900 transition-all text-slate-900 placeholder:text-slate-400"
+            />
+          </div>
         </div>
 
         {/* Categories Pills */}
-        <div className="flex gap-2 overflow-x-auto w-full md:w-auto py-1 no-scrollbar scroll-smooth">
+        <div className="flex gap-2 overflow-x-auto w-full lg:w-auto py-1 no-scrollbar scroll-smooth">
           {uniqueCategories.map(cat => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+              className={`px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap shrink-0 cursor-pointer border ${
                 selectedCategory === cat
-                  ? 'bg-amber-500 text-white shadow-sm'
-                  : 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100'
+                  ? 'bg-slate-950 border-slate-950 text-white shadow-xl shadow-slate-200'
+                  : 'bg-white border-slate-200 text-slate-400 hover:text-slate-950 hover:border-slate-300'
               }`}
             >
               {cat === 'All' ? t.categoryAll : cat}
@@ -128,10 +131,10 @@ export const CatalogManager: React.FC = () => {
         </div>
 
         {/* Primary Action Buttons */}
-        <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+        <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
           <button
             onClick={handleOpenAddForm}
-            className="flex-1 md:flex-initial bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 lg:flex-initial bg-slate-950 hover:bg-slate-900 text-white font-black text-[11px] uppercase tracking-widest px-8 py-4 rounded-2xl shadow-xl shadow-slate-200 flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" />
             {t.addProductBtn}
@@ -144,9 +147,10 @@ export const CatalogManager: React.FC = () => {
                   clearCatalog();
                 }
               }}
-              className="px-4 py-2.5 border border-rose-100 hover:bg-rose-50 rounded-xl text-rose-600 text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer"
+              className="p-4 border border-rose-100 bg-rose-50/30 hover:bg-rose-50 rounded-2xl text-rose-500 transition-all cursor-pointer active:scale-90"
+              title="Clear Catalog"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-5 h-5" />
             </button>
           )}
         </div>

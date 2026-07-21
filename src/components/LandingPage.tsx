@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { useNavigate } from 'react-router-dom';
 import { TRANSLATIONS } from '../data/translations';
 import { 
   Store, 
@@ -22,6 +23,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 export const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
   const { setView, loadDemoData, settings, currentUser, loginUser, registerUser, logoutUser } = useStore();
   const t = TRANSLATIONS.en; // Use English for the main builder landing page
 
@@ -41,12 +43,12 @@ export const LandingPage: React.FC = () => {
 
   const handleTryDemo = () => {
     loadDemoData();
-    setView('builder');
+    navigate('/demo/admin');
   };
 
   const handleStartBuilder = () => {
     if (currentUser) {
-      setView('builder');
+      navigate(`/${currentUser}/admin`);
     } else {
       setError(null);
       setAuthMode('signup');
@@ -70,7 +72,7 @@ export const LandingPage: React.FC = () => {
         const res = await loginUser({ username, password });
         if (res.success) {
           setAuthOpen(false);
-          setView('builder');
+          navigate(`/${username}/admin`);
         } else {
           setError(res.error || 'Invalid credentials');
         }
@@ -90,7 +92,7 @@ export const LandingPage: React.FC = () => {
         });
         if (res.success) {
           setAuthOpen(false);
-          setView('builder');
+          navigate(`/${username}/admin`);
         } else {
           setError(res.error || 'Registration failed');
         }

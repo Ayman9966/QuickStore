@@ -54,17 +54,20 @@ export const StoreSettingsForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" id="settings-form">
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
-          <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-            <Sliders className="w-5 h-5 text-amber-500" />
-            {t.tabSettings}
-          </h3>
+    <form onSubmit={handleSubmit} className="space-y-8" id="settings-form">
+      <div className="bg-white border border-slate-200/60 rounded-[32px] p-8 shadow-soft">
+        <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-100">
+          <div>
+            <h3 className="font-black text-xl text-slate-950 tracking-tight flex items-center gap-3">
+              <Sliders className="w-6 h-6 text-amber-500" />
+              {t.tabSettings}
+            </h3>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Configure your store identity</p>
+          </div>
           
           <button
             type="submit"
-            className="bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm px-5 py-3 sm:px-4 sm:py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95"
+            className="bg-slate-950 hover:bg-slate-900 text-white font-black text-xs px-6 py-3.5 rounded-2xl transition-all shadow-xl shadow-slate-200 flex items-center gap-2 cursor-pointer active:scale-95"
           >
             <Save className="w-4 h-4" />
             {t.saveSettingsBtn}
@@ -73,158 +76,169 @@ export const StoreSettingsForm: React.FC = () => {
 
         {/* Saved Success Toast */}
         {showSavedToast && (
-          <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center gap-2.5 text-emerald-800 text-sm animate-fadeIn">
-            <Check className="w-5 h-5 text-emerald-500 shrink-0" />
+          <div className="mb-10 p-5 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-800 text-sm font-bold animate-fadeIn">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5" />
+            </div>
             <span>{t.settingsSaved}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* General Fields */}
-          <div className="space-y-5">
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                {t.storeName}
-              </label>
-              <input
-                type="text"
-                value={storeName}
-                onChange={(e) => setStoreName(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all"
-                placeholder="e.g. Romano's Pizza, Blue Horizon Retail"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                {t.waNumberLabel}
-              </label>
-              <input
-                type="tel"
-                value={whatsappNumber}
-                onChange={(e) => setWhatsappNumber(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all"
-                placeholder="e.g. +1234567890"
-              />
-              <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-1.5">
-                <HelpCircle className="w-3 h-3 text-slate-400" />
-                {t.waNumberHelp}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 gap-6">
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                  {t.currencyLabel}
+                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                  {t.storeName}
                 </label>
                 <input
                   type="text"
-                  value={currencySymbol}
-                  onChange={(e) => setCurrencySymbol(e.target.value)}
+                  value={storeName}
+                  onChange={(e) => setStoreName(e.target.value)}
                   required
-                  maxLength={5}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all text-center"
-                  placeholder="e.g. $, €, ر.س"
+                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900"
+                  placeholder="e.g. Romano's Pizza"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                  {t.businessTypeLabel}
+                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                  {t.waNumberLabel}
                 </label>
-                <select
-                  value={businessType}
-                  onChange={(e) => setBusinessType(e.target.value as 'food' | 'retail')}
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all bg-white"
-                >
-                  <option value="food">🍽️ Food & Beverage</option>
-                  <option value="retail">🛍️ Retail & Fashion</option>
-                </select>
+                <div className="relative">
+                  <input
+                    type="tel"
+                    value={whatsappNumber}
+                    onChange={(e) => setWhatsappNumber(e.target.value)}
+                    required
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900"
+                    placeholder="e.g. +1234567890"
+                  />
+                  <HelpCircle className="w-4 h-4 text-slate-300 absolute right-4 top-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-[10px] text-slate-400 font-medium mt-2 leading-relaxed">
+                  {t.waNumberHelp}
+                </p>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                {t.languageLabel}
-              </label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value as 'en' | 'ar')}
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all bg-white"
-              >
-                <option value="en">🇬🇧 English (LTR Layout)</option>
-                <option value="ar">🇸🇦 العربية (RTL Layout)</option>
-              </select>
-            </div>
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                    {t.currencyLabel}
+                  </label>
+                  <input
+                    type="text"
+                    value={currencySymbol}
+                    onChange={(e) => setCurrencySymbol(e.target.value)}
+                    required
+                    maxLength={5}
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900 text-center"
+                  />
+                </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
-                {language === 'ar' ? 'رمز حماية لوحة التحكم (Passcode)' : 'Admin Dashboard Passcode (PIN)'}
-              </label>
-              <input
-                type="text"
-                maxLength={8}
-                value={adminPasscode}
-                onChange={(e) => setAdminPasscode(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-mono font-bold transition-all"
-                placeholder="e.g. 1234"
-              />
-              <span className="text-[10px] text-slate-400 block mt-1.5 leading-normal">
-                {language === 'ar' 
-                  ? '🔒 يحمي لوحة التحكم من وصول العملاء عند الضغط على "وضع إدارة المتجر". القيمة الافتراضية هي 1234.' 
-                  : '🔒 Protects your Admin Dashboard from unauthorized customer access. Default value is 1234.'}
-              </span>
+                <div>
+                  <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                    {t.businessTypeLabel}
+                  </label>
+                  <select
+                    value={businessType}
+                    onChange={(e) => setBusinessType(e.target.value as 'food' | 'retail')}
+                    className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900 appearance-none"
+                  >
+                    <option value="food">🍽️ Food & Beverage</option>
+                    <option value="retail">🛍️ Retail & Fashion</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                  {t.languageLabel}
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setLanguage('en')}
+                    className={`p-4 rounded-2xl border font-bold text-xs transition-all flex items-center justify-center gap-2 ${
+                      language === 'en' ? 'bg-slate-950 border-slate-950 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-400'
+                    }`}
+                  >
+                    <span>🇬🇧 English</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLanguage('ar')}
+                    className={`p-4 rounded-2xl border font-bold text-xs transition-all flex items-center justify-center gap-2 ${
+                      language === 'ar' ? 'bg-slate-950 border-slate-950 text-white' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-400'
+                    }`}
+                  >
+                    <span>🇸🇦 العربية</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2.5">
+                  {language === 'ar' ? 'رمز حماية لوحة التحكم (Passcode)' : 'Admin Dashboard Passcode (PIN)'}
+                </label>
+                <input
+                  type="text"
+                  maxLength={8}
+                  value={adminPasscode}
+                  onChange={(e) => setAdminPasscode(e.target.value)}
+                  required
+                  className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-mono font-black transition-all text-slate-900"
+                />
+                <p className="text-[10px] text-slate-400 font-medium mt-2 leading-relaxed italic">
+                  {language === 'ar' 
+                    ? '🔒 يحمي لوحة التحكم من وصول العملاء. الرمز الافتراضي: 1234.' 
+                    : '🔒 Protects your Admin Dashboard from unauthorized access. Default: 1234.'}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Branding, Logos and Visuals */}
-          <div className="space-y-6">
+          <div className="space-y-10">
             <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2 flex items-center gap-1.5">
+              <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4 flex items-center gap-2">
                 <Palette className="w-4 h-4 text-slate-400" />
                 {t.primaryColorLabel}
               </label>
               
-              {/* Preset Palette Circular select */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
                 {PRESET_COLORS.map((col) => (
                   <button
                     key={col.hex}
                     type="button"
                     onClick={() => setPrimaryColor(col.hex)}
-                    className={`p-3.5 sm:p-2.5 rounded-xl border text-sm sm:text-xs font-semibold flex items-center justify-start gap-2 cursor-pointer transition-all active:scale-95 ${
+                    className={`p-4 rounded-2xl border transition-all flex items-center gap-3 cursor-pointer group ${
                       primaryColor === col.hex
-                        ? 'border-slate-900 bg-slate-50 ring-2 ring-slate-900/5 shadow-sm'
+                        ? 'border-slate-950 bg-slate-50 ring-4 ring-slate-950/5'
                         : 'border-slate-200 bg-white hover:border-slate-300'
                     }`}
                   >
-                    <span className={`w-4 h-4 rounded-full ${col.bg} shrink-0`} />
-                    <span className="truncate text-slate-700">{col.name}</span>
+                    <span className={`w-5 h-5 rounded-lg ${col.bg} shrink-0 shadow-sm group-hover:scale-110 transition-transform`} />
+                    <span className="text-[11px] font-black text-slate-700 truncate tracking-tight">{col.name}</span>
                   </button>
                 ))}
               </div>
 
-              {/* Advanced Custom Hex Input */}
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <input
-                    type="text"
-                    value={primaryColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
-                    required
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-xs font-mono font-medium transition-all"
-                    placeholder="Hex format: #ffffff"
-                  />
-                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 rounded-full border border-slate-200" style={{ backgroundColor: primaryColor }} />
-                </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  required
+                  className="w-full pl-14 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-xs font-mono font-black transition-all text-slate-900 uppercase"
+                />
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg border border-slate-200 shadow-sm" style={{ backgroundColor: primaryColor }} />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">
+              <label className="block text-[10px] font-black uppercase text-slate-400 tracking-widest mb-4">
                 {t.logoUrlLabel}
               </label>
               <input
@@ -232,26 +246,26 @@ export const StoreSettingsForm: React.FC = () => {
                 value={logoUrl}
                 onChange={(e) => setLogoUrl(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 text-sm font-medium transition-all mb-3.5"
-                placeholder="Paste direct URL to your logo image"
+                className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900 mb-6"
+                placeholder="Direct URL to your logo image"
               />
 
-              <div className="space-y-2">
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Or Select a Sample Logo Preset:</span>
-                <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-4">
+                <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest block">Sample Logo Presets:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {PRESET_LOGOS.map((logo) => (
                     <button
                       key={logo.name}
                       type="button"
                       onClick={() => setLogoUrl(logo.url)}
-                      className={`p-3.5 sm:p-2 rounded-xl border text-left flex items-center gap-2.5 cursor-pointer transition-all active:scale-95 ${
+                      className={`p-3 rounded-2xl border flex items-center gap-3 cursor-pointer transition-all ${
                         logoUrl === logo.url
-                          ? 'border-amber-500 bg-amber-50/25'
-                          : 'border-slate-200 hover:border-slate-300'
+                          ? 'border-slate-950 bg-slate-50 ring-4 ring-slate-950/5'
+                          : 'border-slate-100 bg-white hover:border-slate-200'
                       }`}
                     >
-                      <img src={logo.url} alt={logo.name} className="w-8 h-8 rounded-lg object-cover border border-slate-200 shrink-0" />
-                      <span className="text-sm sm:text-xs text-slate-700 font-semibold truncate">{logo.name}</span>
+                      <img src={logo.url} alt={logo.name} className="w-10 h-10 rounded-xl object-cover border border-slate-100 shadow-sm shrink-0" />
+                      <span className="text-[11px] font-black text-slate-700 truncate tracking-tight">{logo.name}</span>
                     </button>
                   ))}
                 </div>
