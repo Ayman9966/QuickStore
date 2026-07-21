@@ -37,31 +37,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return 'landing';
   });
   
-  // Load initial state from localStorage
-  const [products, setProducts] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('quickstore_products');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [settings, setSettings] = useState<StoreSettings>(() => {
-    const saved = localStorage.getItem('quickstore_settings');
-    const parsed = saved ? JSON.parse(saved) : { ...DEFAULT_SETTINGS };
-    if (!parsed.storeId) {
-      parsed.storeId = `store-${Math.floor(100000 + Math.random() * 900000)}`;
-    }
-    if (!parsed.adminPasscode) {
-      parsed.adminPasscode = '1234';
-    }
-    return parsed;
-  });
-
-  const [currentUser, setCurrentUser] = useState<string | null>(() => {
-    return localStorage.getItem('quickstore_user');
-  });
-
-  const [adminUsername, setAdminUsername] = useState<string>('aymaansamy96');
-
+  // Load initial state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [settings, setSettings] = useState<StoreSettings>({ ...DEFAULT_SETTINGS });
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [adminUsername, setAdminUsername] = useState<string>('aymaansamy96');
 
   // Fetch admin and bot info on mount
   useEffect(() => {
@@ -75,14 +56,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       .catch(err => console.error('Error fetching admin bot info:', err));
   }, []);
 
-  // Synchronize with localStorage
+  // Fetch store data when user logs in
   useEffect(() => {
-    localStorage.setItem('quickstore_products', JSON.stringify(products));
-  }, [products]);
+    if (!currentUser) {
+      setProducts([]);
+      setSettings({ ...DEFAULT_SETTINGS });
+      return;
+    }
 
-  useEffect(() => {
-    localStorage.setItem('quickstore_settings', JSON.stringify(settings));
-  }, [settings]);
+    // Since we don't have a direct "getStore" API route for logged in user, 
+    // we rely on the login response that populated the context.
+    // For now, we can just ensure we sync up.
+  }, [currentUser]);
+
 
   // Periodic status checker for customer view to check if subscription is active
   useEffect(() => {
@@ -169,7 +155,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       
       setCurrentUser(userData.username.trim().toLowerCase());
-      localStorage.setItem('quickstore_user', userData.username.trim().toLowerCase());
       
       const newSettings = {
         storeId: data.storeId,
@@ -218,7 +203,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       
       setCurrentUser(userData.username.trim().toLowerCase());
-      localStorage.setItem('quickstore_user', userData.username.trim().toLowerCase());
       
       if (data.settings) {
         setSettings(data.settings);
@@ -236,7 +220,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const logoutUser = () => {
     setCurrentUser(null);
-    localStorage.removeItem('quickstore_user');
     setSettings({ ...DEFAULT_SETTINGS });
     setProducts([]);
     setCart([]);
