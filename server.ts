@@ -3,12 +3,21 @@ import path from "path";
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.SUPABASE_SECRET_KEY!
-);
+let supabaseClient: SupabaseClient | null = null;
+
+function getSupabase(): SupabaseClient {
+  if (!supabaseClient) {
+    const url = process.env.VITE_SUPABASE_URL;
+    const key = process.env.SUPABASE_SECRET_KEY;
+    if (!url || !key) {
+      throw new Error('Supabase environment variables are required');
+    }
+    supabaseClient = createClient(url, key);
+  }
+  return supabaseClient;
+}
 
 const PORT = 3000;
 
@@ -104,25 +113,25 @@ async function startServer() {
 
   // API Route: CRUD for stores
   app.get("/api/stores", async (req, res) => {
-    const { data, error } = await supabase.from('stores').select('*');
+    const { data, error } = await getSupabase().from('stores').select('*');
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
   });
 
   app.post("/api/stores", async (req, res) => {
-    const { data, error } = await supabase.from('stores').insert(req.body);
+    const { data, error } = await getSupabase().from('stores').insert(req.body);
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
   });
 
   app.put("/api/stores/:id", async (req, res) => {
-    const { data, error } = await supabase.from('stores').update(req.body).eq('id', req.params.id);
+    const { data, error } = await getSupabase().from('stores').update(req.body).eq('id', req.params.id);
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
   });
 
   app.delete("/api/stores/:id", async (req, res) => {
-    const { data, error } = await supabase.from('stores').delete().eq('id', req.params.id);
+    const { data, error } = await getSupabase().from('stores').delete().eq('id', req.params.id);
     if (error) return res.status(500).json({ error: error.message });
     res.json(data);
   });
@@ -417,6 +426,11 @@ async function startServer() {
       ownerChatId: TELEGRAM_CHAT_ID,
       adminUsername: TELEGRAM_ADMIN_USERNAME
     });
+  });
+
+  // Catch-all for undefined API routes to return JSON instead of HTML
+  app.all("/api/*", (req, res) => {
+    res.status(404).json({ error: "API route not found" });
   });
 
   // Vite middleware for development or serving production build
