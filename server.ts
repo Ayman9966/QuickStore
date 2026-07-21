@@ -5,7 +5,10 @@ import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient('https://ltloscarjmoxvlxraqge.supabase.co', 'sb_secret_wqLZ_SBqJdTQAsstqe-Wjw_XxmZmHl1');
+const supabase = createClient(
+  process.env.VITE_SUPABASE_URL!,
+  process.env.SUPABASE_SECRET_KEY!
+);
 
 const PORT = 3000;
 
