@@ -29,13 +29,13 @@ export const Dashboard: React.FC = () => {
   const t = TRANSLATIONS[settings.language];
   const isRtl = settings.language === 'ar';
 
-  const [botUsername, setBotUsername] = useState<string>('QuickStoreBuilderBot');
+  const [supportUsername, setSupportUsername] = useState<string>(adminUsername || 'aymaansamy96');
   useEffect(() => {
     fetch('/api/telegram/bot-info')
       .then(res => res.json())
       .then(data => {
-        if (data && data.botUsername) {
-          setBotUsername(data.botUsername);
+        if (data && data.adminUsername) {
+          setSupportUsername(data.adminUsername);
         }
       })
       .catch(err => console.error('Error fetching bot info:', err));
@@ -255,12 +255,12 @@ export const Dashboard: React.FC = () => {
             </div>
             <button
               onClick={() => {
-                window.open(`https://t.me/${botUsername}?start=${settings.storeId || ''}`, '_blank');
+                window.open(`https://t.me/${supportUsername}`, '_blank');
               }}
               className="bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg hover:bg-slate-800 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>{isRtl ? 'طلب تفعيل الاشتراك عبر تيليجرام (مدير النظام)' : 'Request Activation via Telegram (Super Admin)'}</span>
+              <span>{isRtl ? 'التواصل المباشر مع الدعم عبر تيليجرام 💬' : 'Direct Support Chat via Telegram 💬'}</span>
             </button>
           </div>
         </div>

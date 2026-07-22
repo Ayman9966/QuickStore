@@ -59,7 +59,7 @@ export const Storefront: React.FC = () => {
 
   const isSubscribed = !!settings.isSubscribed;
 
-  const [botUsername, setBotUsername] = useState<string>('QuickStoreBuilderBot');
+  const [adminUsername, setAdminUsername] = useState<string>('aymaansamy96');
 
   // Listen to physical keyboard events when passcode modal is open
   useEffect(() => {
@@ -108,8 +108,8 @@ export const Storefront: React.FC = () => {
     fetch('/api/telegram/bot-info')
       .then(res => res.json())
       .then(data => {
-        if (data && data.botUsername) {
-          setBotUsername(data.botUsername);
+        if (data && data.adminUsername) {
+          setAdminUsername(data.adminUsername);
         }
       })
       .catch(err => console.error('Error fetching bot info:', err));
@@ -821,7 +821,7 @@ export const Storefront: React.FC = () => {
                 </div>
 
                 <a
-                  href={`https://t.me/${botUsername}?start=${settings.storeId || ''}`}
+                  href={`https://t.me/${adminUsername}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full bg-[#229ED9] hover:bg-[#1a85b8] text-white font-extrabold text-xs py-3 rounded-2xl flex items-center justify-center gap-2 shadow-md transition-all text-center"
@@ -829,7 +829,7 @@ export const Storefront: React.FC = () => {
                   <svg className="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15.15-.3.3-.45.45l-4.71 4.71c-.1.1-.1.25 0 .35l1.83 1.83c.1.1.25.1.35 0l4.71-4.71c.15-.15.3-.3.45-.45.2-.2.2-.5 0-.7-.2-.2-.5-.2-.7 0zm-7.93 5.4l1.83 1.83c.1.1.1.25 0 .35l-1.3 1.3c-.1.1-.25.1-.35 0l-1.83-1.83c-.1-.1-.1-.25 0-.35l1.3-1.3c.1-.1.25-.1.35 0z" />
                   </svg>
-                  <span>{isRtl ? 'تفعيل وإدارة الاشتراك عبر تيليجرام 💬' : 'Activate & Manage via Telegram Bot 💬'}</span>
+                  <span>{isRtl ? 'التواصل المباشر مع الدعم عبر تيليجرام 💬' : 'Direct Support Chat via Telegram 💬'}</span>
                 </a>
               </div>
 
