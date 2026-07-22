@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "Store": {
+      "title": "Store",
+      "description": "Store configuration and data",
+      "type": "object",
+      "properties": {
+        "storeId": { "type": "string" },
+        "username": { "type": "string" },
+        "password": { "type": "string" },
+        "storeName": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "businessType": { "type": "string" },
+        "language": { "type": "string" },
+        "isSubscribed": { "type": "boolean" },
+        "registeredAt": { "type": "string" },
+        "lastActiveAt": { "type": "string" }
+      },
+      "required": ["storeId", "username", "password", "storeName"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product in store catalog",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "image": { "type": "string" },
+        "description": { "type": "string" },
+        "inStock": { "type": "boolean" }
+      },
+      "required": ["id", "name", "price"]
+    }
+  },
+  "firestore": {
+    "/stores/{storeId}": {
+      "schema": { "$ref": "#/entities/Store" },
+      "description": "Store documents keyed by storeId"
+    },
+    "/stores/{storeId}/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Products subcollection for each store"
+    }
+  }
+}

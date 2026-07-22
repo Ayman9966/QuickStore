@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isValidId(id) {
+      return id is string && id.matches('^[a-zA-Z0-9_\\-]+$') && id.size() > 0 && id.size() <= 100;
+    }
+
+    match /stores/{storeId} {
+      allow read: if true;
+      allow create, update, delete: if isValidId(storeId);
+
+      match /products/{productId} {
+        allow read: if true;
+        allow create, update, delete: if isValidId(storeId) && isValidId(productId);
+      }
+    }
+  }
+}

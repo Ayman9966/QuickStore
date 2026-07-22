@@ -2,33 +2,39 @@ import express from "express";
 import path from "path";
 import bcrypt from "bcryptjs";
 import { createServer as createViteServer } from "vite";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { initializeApp, getApps } from "firebase-admin/app";
+import { getFirestore } from "firebase-admin/firestore";
+import fs from "fs";
 
 dotenv.config();
 
-let supabaseClient: SupabaseClient | null = null;
-
-function getSupabase(): SupabaseClient {
-  if (!supabaseClient) {
-    const url = process.env.VITE_SUPABASE_URL;
-    const key = process.env.SUPABASE_SECRET_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-    if (!url || !key) {
-      throw new Error('Supabase environment variables are required');
-    }
-    supabaseClient = createClient(url, key);
-  }
-  return supabaseClient;
+let firebaseConfig: any = {};
+try {
+  const rawConfig = fs.readFileSync(path.join(process.cwd(), "firebase-applet-config.json"), "utf8");
+  firebaseConfig = JSON.parse(rawConfig);
+} catch (e) {
+  console.warn("Could not load firebase-applet-config.json");
 }
+
+if (!getApps().length) {
+  try {
+    initializeApp({
+      projectId: firebaseConfig.projectId || "charismatic-descent-kcf5x",
+    });
+  } catch (e) {
+    console.error("Firebase admin init error:", e);
+  }
+}
+
+const firestoreDb = getFirestore(undefined, firebaseConfig.firestoreDatabaseId || undefined);
 
 const PORT = 3000;
 
-// Default Telegram credentials (user provided)
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "7573867584:AAE4B4kDxPkTCCk85X7SeW9UyHim8DNuSkA";
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "7579384719";
 const TELEGRAM_ADMIN_USERNAME = process.env.TELEGRAM_ADMIN_USERNAME || "aymaansamy96";
 
-// Telegram Helper to Send Message
 async function sendTelegramMessage(chatId: string, text: string) {
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
@@ -53,23 +59,24 @@ async function startServer() {
   const app = express();
   app.use(express.json());
 
-  // API Route: Health check for database
   app.get("/api/health", (req, res) => {
     res.json({
       status: "ok",
-      database: "supabase",
+      database: "firebase-firestore",
       timestamp: new Date().toISOString()
     });
   });
 
-  // API Route: CRUD for stores
   app.get("/api/stores", async (req, res) => {
-    const { data, error } = await getSupabase().from('stores').select('*');
-    if (error) return res.status(500).json({ error: error.message });
-    res.json(data);
+    try {
+      const snapshot = await firestoreDb.collection("stores").get();
+      const stores = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      res.json(stores);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   });
 
-  // API Route: platform Sign Up / Register Account
   app.post("/api/auth/register", async (req, res) => {
     try {
       const { username, password, storeName, whatsappNumber, businessType, language } = req.body;
@@ -79,8 +86,8 @@ async function startServer() {
 
       const trimmedUsername = username.trim().toLowerCase();
       
-      const { data: existing, error: findError } = await getSupabase().from('stores').select('id').eq('username', trimmedUsername).single();
-      if (existing) {
+      const querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
+      if (!querySnapshot.empty) {
         return res.status(400).json({ error: "Username is already taken" });
       }
 
@@ -88,16 +95,17 @@ async function startServer() {
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const newStore = {
-        store_id: storeId,
+        storeId,
         username: trimmedUsername,
         password: hashedPassword,
-        store_name: storeName || "Unnamed Store",
-        whatsapp_number: whatsappNumber || "",
-        business_type: businessType || "retail",
+        storeName: storeName || "Unnamed Store",
+        whatsappNumber: whatsappNumber || "",
+        businessType: businessType || "retail",
         language: language || "en",
-        is_subscribed: false,
-        registered_at: new Date().toISOString(),
-        last_active_at: new Date().toISOString(),
+        isSubscribed: false,
+        subscriptionEndDate: null,
+        registeredAt: new Date().toISOString(),
+        lastActiveAt: new Date().toISOString(),
         settings: {
           storeId,
           storeName: storeName || "Unnamed Store",
@@ -114,10 +122,8 @@ async function startServer() {
         products: []
       };
 
-      const { data, error } = await getSupabase().from('stores').insert(newStore);
-      if (error) throw error;
+      await firestoreDb.collection("stores").doc(storeId).set(newStore);
 
-      // Notify Admin on Telegram
       const messageText = `🆕 *حساب تاجر جديد سجّل في كويك ستور!*
 • *اسم المستخدم:* ${trimmedUsername}
 • *اسم المتجر:* ${storeName}
@@ -139,14 +145,10 @@ async function startServer() {
       });
     } catch (error: any) {
       console.error("Sign up endpoint error:", error);
-      res.status(500).json({ 
-        error: error.message || "Internal server error",
-        details: typeof error === 'object' ? error : String(error)
-      });
+      res.status(500).json({ error: error.message || "Internal server error" });
     }
   });
 
-  // API Route: platform Log In
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { username, password } = req.body;
@@ -155,18 +157,24 @@ async function startServer() {
       }
 
       const trimmedUsername = username.trim().toLowerCase();
+      const querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
       
-      const { data: store, error } = await getSupabase().from('stores').select('*').eq('username', trimmedUsername).single();
-
-      if (!store || !(await bcrypt.compare(password, store.password || ""))) {
+      if (querySnapshot.empty) {
         return res.status(401).json({ error: "Invalid username or password" });
       }
 
-      await getSupabase().from('stores').update({ last_active_at: new Date().toISOString() }).eq('id', store.id);
+      const storeDoc = querySnapshot.docs[0];
+      const store = storeDoc.data();
+
+      if (!(await bcrypt.compare(password, store.password || ""))) {
+        return res.status(401).json({ error: "Invalid username or password" });
+      }
+
+      await storeDoc.ref.update({ lastActiveAt: new Date().toISOString() });
 
       res.json({
         success: true,
-        storeId: store.store_id,
+        storeId: store.storeId,
         settings: store.settings,
         products: store.products
       });
@@ -176,8 +184,6 @@ async function startServer() {
     }
   });
 
-
-  // API Route: Sync/Update settings and products state
   app.post("/api/store/update-data", async (req, res) => {
     try {
       const { storeId, settings, products } = req.body;
@@ -185,32 +191,33 @@ async function startServer() {
         return res.status(400).json({ error: "Missing storeId" });
       }
 
-      const { data: store, error: findError } = await getSupabase().from('stores').select('*').eq('store_id', storeId).single();
+      const storeRef = firestoreDb.collection("stores").doc(storeId);
+      const docSnap = await storeRef.get();
 
-      if (!store) {
+      if (!docSnap.exists) {
         return res.status(404).json({ error: "Store not found" });
       }
 
-      const updateData: any = { last_active_at: new Date().toISOString() };
+      const store = docSnap.data()!;
+      const updateData: any = { lastActiveAt: new Date().toISOString() };
       
       if (settings) {
         updateData.settings = settings;
-        updateData.store_name = settings.storeName || store.store_name;
-        updateData.whatsapp_number = settings.whatsappNumber || store.whatsapp_number;
-        updateData.business_type = settings.businessType || store.business_type;
+        updateData.storeName = settings.storeName || store.storeName;
+        updateData.whatsappNumber = settings.whatsappNumber || store.whatsappNumber;
+        updateData.businessType = settings.businessType || store.businessType;
         updateData.language = settings.language || store.language;
       }
       if (products) {
         updateData.products = products;
       }
       
-      const { error: updateError } = await getSupabase().from('stores').update(updateData).eq('id', store.id);
-      if (updateError) throw updateError;
+      await storeRef.update(updateData);
 
       res.json({
         success: true,
-        isSubscribed: store.is_subscribed,
-        subscriptionEndDate: store.subscription_end_date
+        isSubscribed: store.isSubscribed || false,
+        subscriptionEndDate: store.subscriptionEndDate || null
       });
     } catch (error: any) {
       console.error("Update-data endpoint error:", error);
@@ -218,7 +225,6 @@ async function startServer() {
     }
   });
 
-  // API Route: Register / Sync Store
   app.post("/api/store/register", async (req, res) => {
     try {
       const { storeId, storeName, whatsappNumber, businessType, language } = req.body;
@@ -226,25 +232,40 @@ async function startServer() {
         return res.status(400).json({ error: "Missing storeId" });
       }
 
-      const { data: store, error: findError } = await getSupabase().from('stores').select('*').eq('store_id', storeId).single();
-      const isNew = !store;
+      const storeRef = firestoreDb.collection("stores").doc(storeId);
+      const docSnap = await storeRef.get();
+      const isNew = !docSnap.exists;
 
       if (isNew) {
         const newStore = {
-          store_id: storeId,
-          username: `user_${storeId}`, // Default username if register through sync
-          password: 'password', // Default
-          store_name: storeName || "Unnamed Store",
-          whatsapp_number: whatsappNumber || "",
-          business_type: businessType || "food",
+          storeId,
+          username: `user_${storeId}`,
+          password: 'password',
+          storeName: storeName || "Unnamed Store",
+          whatsappNumber: whatsappNumber || "",
+          businessType: businessType || "food",
           language: language || "ar",
-          is_subscribed: false,
-          registered_at: new Date().toISOString(),
-          last_active_at: new Date().toISOString(),
+          isSubscribed: false,
+          subscriptionEndDate: null,
+          registeredAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString(),
+          settings: {
+            storeId,
+            storeName: storeName || "Unnamed Store",
+            logoUrl: "",
+            primaryColor: "#f59e0b",
+            currencySymbol: "$",
+            whatsappNumber: whatsappNumber || "",
+            businessType: businessType || "food",
+            language: language || "ar",
+            viewMode: "cards",
+            isSubscribed: false,
+            adminPasscode: "1234"
+          },
+          products: []
         };
-        await getSupabase().from('stores').insert(newStore);
+        await storeRef.set(newStore);
 
-        // Notify Admin on Telegram
         const messageText = `🆕 *مستخدم جديد سجّل في كويك ستور!*
 • *اسم المتجر:* ${storeName}
 • *معرّف المتجر:* \`${storeId}\`
@@ -258,19 +279,23 @@ async function startServer() {
         
         await sendTelegramMessage(TELEGRAM_CHAT_ID, messageText);
       } else {
-        await getSupabase().from('stores').update({
-          store_name: storeName || store.store_name,
-          whatsapp_number: whatsappNumber || store.whatsapp_number,
-          business_type: businessType || store.business_type,
+        const store = docSnap.data()!;
+        await storeRef.update({
+          storeName: storeName || store.storeName,
+          whatsappNumber: whatsappNumber || store.whatsappNumber,
+          businessType: businessType || store.businessType,
           language: language || store.language,
-          last_active_at: new Date().toISOString()
-        }).eq('id', store.id);
+          lastActiveAt: new Date().toISOString()
+        });
       }
+
+      const updatedSnap = await storeRef.get();
+      const storeData = updatedSnap.data();
 
       res.json({
         success: true,
-        isSubscribed: store ? store.is_subscribed : false,
-        subscriptionEndDate: store ? store.subscription_end_date : null,
+        isSubscribed: storeData ? storeData.isSubscribed : false,
+        subscriptionEndDate: storeData ? storeData.subscriptionEndDate : null,
       });
     } catch (error: any) {
       console.error("Register endpoint error:", error);
@@ -278,7 +303,6 @@ async function startServer() {
     }
   });
 
-  // API Route: Get Store Status
   app.get("/api/store/status", async (req, res) => {
     try {
       const { storeId } = req.query;
@@ -286,26 +310,26 @@ async function startServer() {
         return res.status(400).json({ error: "Missing or invalid storeId" });
       }
 
-      const { data: store, error: findError } = await getSupabase().from('stores').select('*').eq('store_id', storeId).single();
+      const storeRef = firestoreDb.collection("stores").doc(storeId);
+      const docSnap = await storeRef.get();
 
-      if (!store) {
+      if (!docSnap.exists) {
         return res.json({ isSubscribed: false });
       }
 
-      // Check if subscription has expired
-      let isSubscribed = store.is_subscribed;
-      if (store.is_subscribed && store.subscription_end_date) {
-        const expiry = new Date(store.subscription_end_date);
+      const store = docSnap.data()!;
+      let isSubscribed = store.isSubscribed;
+      if (store.isSubscribed && store.subscriptionEndDate) {
+        const expiry = new Date(store.subscriptionEndDate);
         if (expiry < new Date()) {
           isSubscribed = false;
-          await getSupabase().from('stores').update({ is_subscribed: false }).eq('id', store.id);
+          await storeRef.update({ isSubscribed: false });
 
-          // Notify admin of expiry
           sendTelegramMessage(
             TELEGRAM_CHAT_ID,
             `⚠️ *انتهاء اشتراك متجر!*
-• *المتجر:* ${store.store_name}
-• *المعرف:* \`${store.store_id}\`
+• *المتجر:* ${store.storeName}
+• *المعرف:* \`${store.storeId}\`
 • انتهت صلاحية الاشتراك تلقائياً.`
           );
         }
@@ -313,7 +337,7 @@ async function startServer() {
 
       res.json({
         isSubscribed,
-        subscriptionEndDate: store.subscription_end_date,
+        subscriptionEndDate: store.subscriptionEndDate,
       });
     } catch (error: any) {
       console.error("Status endpoint error:", error);
@@ -321,19 +345,17 @@ async function startServer() {
     }
   });
 
-  // API Route: Get Bot Username (to link users to chat with support/bot)
-  let botUsername = "QuickStoreBuilderBot"; // Default fallback
+  let botUsername = "QuickStoreBuilderBot";
   try {
     const meRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getMe`);
     if (meRes.ok) {
-      const meData = await meRes.ok ? await meRes.json() : null;
+      const meData = await meRes.json();
       if (meData?.result?.username) {
         botUsername = meData.result.username;
-        console.log(`Telegram Bot authenticated as @${botUsername}`);
       }
     }
   } catch (err) {
-    console.warn("Could not fetch Telegram Bot username on startup (might be offline/invalid token).");
+    console.warn("Could not fetch Telegram Bot username on startup.");
   }
 
   app.get("/api/telegram/bot-info", (req, res) => {
@@ -344,12 +366,10 @@ async function startServer() {
     });
   });
 
-  // Catch-all for undefined API routes to return JSON instead of HTML
   app.all("/api/*", (req, res) => {
     res.status(404).json({ error: "API route not found" });
   });
 
-  // Vite middleware for development or serving production build
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
@@ -364,16 +384,13 @@ async function startServer() {
     });
   }
 
-  // Listen on specified PORT and Host 0.0.0.0
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
   });
 
-  // Start Telegram Bot Long Polling
   startTelegramLongPolling();
 }
 
-// Telegram Bot Long Polling Logic
 function startTelegramLongPolling() {
   let offset = 0;
   console.log("Starting Telegram Bot Long Polling background service...");
@@ -383,7 +400,6 @@ function startTelegramLongPolling() {
       const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getUpdates?offset=${offset}&timeout=10`;
       const response = await fetch(url);
       if (!response.ok) {
-        // Silently wait and retry if error occurs (e.g. rate limit, bad token)
         setTimeout(poll, 10000);
         return;
       }
@@ -399,13 +415,12 @@ function startTelegramLongPolling() {
             const fromChatId = String(msg.chat.id);
             const isAdmin = fromChatId === TELEGRAM_CHAT_ID;
 
-            // Simple commands parsing
             if (text.startsWith("/")) {
               const parts = text.split(/\s+/);
               const command = parts[0].toLowerCase();
 
               if (command === "/start") {
-                const paramStoreId = parts[1]; // e.g. /start store-123456
+                const paramStoreId = parts[1];
                 if (isAdmin) {
                   const reply = `👋 *أهلاً بك يا مدير النظام!*
 
@@ -431,14 +446,15 @@ function startTelegramLongPolling() {
                   await sendTelegramMessage(fromChatId, "⚠️ عذراً، هذا الأمر مخصص لمدير النظام فقط.");
                   continue;
                 }
-                const { data: stores, error } = await getSupabase().from('stores').select('*');
-                if (error || !stores || stores.length === 0) {
+                const snapshot = await firestoreDb.collection("stores").get();
+                const stores = snapshot.docs.map(doc => doc.data());
+                if (stores.length === 0) {
                   await sendTelegramMessage(fromChatId, "📋 لا يوجد أي متاجر مسجلة حالياً.");
                 } else {
                   let reply = `📋 *قائمة المتاجر المسجلة (${stores.length}):*\n\n`;
                   stores.forEach((s: any) => {
-                    const status = s.is_subscribed ? `✅ نشط (ينتهي: ${s.subscription_end_date ? new Date(s.subscription_end_date).toLocaleDateString("ar-EG") : "غير محدد"})` : "❌ مجاني/منتهي";
-                    reply += `• *${s.store_name}*\n  المعرف: \`${s.store_id}\`\n  الاشتراك: ${status}\n  الواتساب: \`${s.whatsapp_number}\`\n\n`;
+                    const status = s.isSubscribed ? `✅ نشط (ينتهي: ${s.subscriptionEndDate ? new Date(s.subscriptionEndDate).toLocaleDateString("ar-EG") : "غير محدد"})` : "❌ مجاني/منتهي";
+                    reply += `• *${s.storeName}*\n  المعرف: \`${s.storeId}\`\n  الاشتراك: ${status}\n  الواتساب: \`${s.whatsappNumber}\`\n\n`;
                   });
                   await sendTelegramMessage(fromChatId, reply);
                 }
@@ -456,22 +472,24 @@ function startTelegramLongPolling() {
                   continue;
                 }
 
-                const { data: store, error } = await getSupabase().from('stores').select('*').eq('store_id', targetId).single();
+                const storeRef = firestoreDb.collection("stores").doc(targetId);
+                const docSnap = await storeRef.get();
 
-                if (!store) {
-                  await sendTelegramMessage(fromChatId, `❌ لم يتم العثور على متجر بالمعرف \`${targetId}\`. تأكد من كتابة المعرف بشكل صحيح.`);
+                if (!docSnap.exists) {
+                  await sendTelegramMessage(fromChatId, `❌ لم يتم العثور على متجر بالمعرف \`${targetId}\`.`);
                 } else {
+                  const store = docSnap.data()!;
                   const endDate = new Date();
                   endDate.setDate(endDate.getDate() + days);
 
-                  await getSupabase().from('stores').update({ 
-                    is_subscribed: true, 
-                    subscription_end_date: endDate.toISOString() 
-                  }).eq('id', store.id);
+                  await storeRef.update({ 
+                    isSubscribed: true, 
+                    subscriptionEndDate: endDate.toISOString() 
+                  });
 
                   const reply = `✅ *تم تفعيل الاشتراك الاحترافي بنجاح!*
-• *المتجر:* ${store.store_name}
-• *المعرف:* \`${store.store_id}\`
+• *المتجر:* ${store.storeName}
+• *المعرف:* \`${store.storeId}\`
 • *المدة:* ${days} يومًا
 • *ينتهي في:* ${endDate.toLocaleDateString("ar-EG")} ${endDate.toLocaleTimeString("ar-EG")}`;
                   
@@ -490,19 +508,21 @@ function startTelegramLongPolling() {
                   continue;
                 }
 
-                const { data: store, error } = await getSupabase().from('stores').select('*').eq('store_id', targetId).single();
+                const storeRef = firestoreDb.collection("stores").doc(targetId);
+                const docSnap = await storeRef.get();
 
-                if (!store) {
+                if (!docSnap.exists) {
                   await sendTelegramMessage(fromChatId, `❌ لم يتم العثور على متجر بالمعرف \`${targetId}\`.`);
                 } else {
-                  await getSupabase().from('stores').update({ 
-                    is_subscribed: false, 
-                    subscription_end_date: null 
-                  }).eq('id', store.id);
+                  const store = docSnap.data()!;
+                  await storeRef.update({ 
+                    isSubscribed: false, 
+                    subscriptionEndDate: null 
+                  });
 
                   const reply = `❌ *تم إلغاء تفعيل اشتراك المتجر بنجاح:*
-• *المتجر:* ${store.store_name}
-• *المعرف:* \`${store.store_id}\``;
+• *المتجر:* ${store.storeName}
+• *المعرف:* \`${store.storeId}\``;
                   
                   await sendTelegramMessage(fromChatId, reply);
                 }
@@ -519,21 +539,23 @@ function startTelegramLongPolling() {
                   continue;
                 }
 
-                const { data: store, error } = await getSupabase().from('stores').select('*').eq('store_id', targetId).single();
+                const storeRef = firestoreDb.collection("stores").doc(targetId);
+                const docSnap = await storeRef.get();
 
-                if (!store) {
+                if (!docSnap.exists) {
                   await sendTelegramMessage(fromChatId, `❌ لم يتم العثور على متجر بالمعرف \`${targetId}\`.`);
                 } else {
+                  const store = docSnap.data()!;
                   const reply = `ℹ️ *تفاصيل المتجر:*
-• *الاسم:* ${store.store_name}
-• *المعرف:* \`${store.store_id}\`
-• *الاشتراك:* ${store.is_subscribed ? "✅ نشط/احترافي" : "❌ غير نشط/مجاني"}
-• *تاريخ الانتهاء:* ${store.subscription_end_date ? new Date(store.subscription_end_date).toLocaleString("ar-EG") : "لا يوجد"}
-• *الواتساب:* \`${store.whatsapp_number}\`
+• *الاسم:* ${store.storeName}
+• *المعرف:* \`${store.storeId}\`
+• *الاشتراك:* ${store.isSubscribed ? "✅ نشط/احترافي" : "❌ غير نشط/مجاني"}
+• *تاريخ الانتهاء:* ${store.subscriptionEndDate ? new Date(store.subscriptionEndDate).toLocaleString("ar-EG") : "لا يوجد"}
+• *الواتساب:* \`${store.whatsappNumber}\`
 • *اللغة المعتمدة:* ${store.language.toUpperCase()}
-• *نوع النشاط:* ${store.business_type.toUpperCase()}
-• *تاريخ التسجيل:* ${new Date(store.registered_at).toLocaleString("ar-EG")}
-• *آخر ظهور:* ${new Date(store.last_active_at).toLocaleString("ar-EG")}`;
+• *نوع النشاط:* ${store.businessType.toUpperCase()}
+• *تاريخ التسجيل:* ${new Date(store.registeredAt).toLocaleString("ar-EG")}
+• *آخر ظهور:* ${new Date(store.lastActiveAt).toLocaleString("ar-EG")}`;
                   
                   await sendTelegramMessage(fromChatId, reply);
                 }
@@ -542,13 +564,10 @@ function startTelegramLongPolling() {
                 await sendTelegramMessage(fromChatId, "⚠️ أمر غير معروف. استخدم `/start` لعرض الأوامر المتاحة.");
               }
             } else {
-              // Non-command text
               if (!isAdmin) {
-                // Forward customer message to system owner with context
-                const replyToUser = `📬 تم استلام رسالتك وتوجيهها لمدير النظام. معرّف متجرك هو \`${fromChatId}\` أو يمكن للمدير تفعيل متجرك عبر معرّف المتجر المسجل. شكراً لتواصلك معنا!`;
+                const replyToUser = `📬 تم استلام رسالتك وتوجيهها لمدير النظام. معرّف متجرك هو \`${fromChatId}\`. شكراً لتواصلك معنا!`;
                 await sendTelegramMessage(fromChatId, replyToUser);
 
-                // Notify admin of a customer query
                 const adminAlert = `📬 *رسالة واردة من مستخدم:*
 • *الاسم:* ${msg.from?.first_name || ""} ${msg.from?.last_name || ""}
 • *معرف التيليجرام:* \`${fromChatId}\`
@@ -564,11 +583,10 @@ function startTelegramLongPolling() {
       setTimeout(poll, 1500);
     } catch (error) {
       console.error("Telegram long polling error:", error);
-      setTimeout(poll, 10000); // Wait longer on error
+      setTimeout(poll, 10000);
     }
   }
 
-  // Start polling
   poll();
 }
 
