@@ -49,7 +49,7 @@ export const Dashboard: React.FC = () => {
   const totalCategories = Array.from(new Set(products.map(p => p.category))).length;
 
   return (
-    <div id="dashboard-page" className="bg-[#f8fafc] min-h-screen text-slate-800 font-sans selection:bg-amber-100 flex flex-col grain">
+    <div id="dashboard-page" dir={isRtl ? 'rtl' : 'ltr'} style={{ direction: isRtl ? 'rtl' : 'ltr' }} className="bg-[#f8fafc] min-h-screen text-slate-800 font-sans selection:bg-amber-100 flex flex-col grain">
       {/* Top Admin Nav Bar */}
       <header id="dashboard-header" className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-40 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -57,10 +57,10 @@ export const Dashboard: React.FC = () => {
             <button
               id="back-to-landing-btn"
               onClick={() => navigate('/')}
-              className="p-2.5 -ml-2.5 hover:bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 transition-all cursor-pointer group"
+              className={`p-2.5 ${isRtl ? '-mr-2.5' : '-ml-2.5'} hover:bg-slate-100 rounded-2xl text-slate-400 hover:text-slate-900 transition-all cursor-pointer group`}
               title={t.backToLanding}
             >
-              <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+              <ChevronLeft className={`w-5 h-5 group-hover:${isRtl ? 'translate-x-0.5' : '-translate-x-0.5'} transition-transform`} />
             </button>
             <div className="flex items-center gap-3">
               <div className="bg-slate-900 text-white p-2.5 rounded-[14px] shadow-lg shadow-slate-200">

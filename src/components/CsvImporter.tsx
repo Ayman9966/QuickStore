@@ -106,8 +106,10 @@ export const CsvImporter: React.FC = () => {
     }
   };
 
+  const isRtl = settings.language === 'ar';
+
   return (
-    <div className="space-y-6" id="csv-importer-container">
+    <div className="space-y-6" id="csv-importer-container" dir={isRtl ? 'rtl' : 'ltr'} style={{ direction: isRtl ? 'rtl' : 'ltr' }}>
       <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
         <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
           <FileSpreadsheet className="w-5 h-5 text-amber-500" />

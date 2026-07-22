@@ -244,7 +244,7 @@ export const Storefront: React.FC = () => {
               <div className="relative">
                 <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2.5 -right-2.5 bg-amber-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-slate-950">
+                  <span className={`absolute -top-2.5 ${isRtl ? '-left-2.5' : '-right-2.5'} bg-amber-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-slate-950`}>
                     {cartCount}
                   </span>
                 )}
@@ -260,7 +260,7 @@ export const Storefront: React.FC = () => {
       {/* Back to Creator Panel Alert (For demo purposes) */}
       {view !== 'customer' && (
         <div className="py-2 px-4 text-center text-xs font-semibold border-b bg-amber-50 border-amber-100 text-amber-800">
-          <span className="mr-2">🔧 {isRtl ? 'وضع إدارة المتجر:' : 'Owner Mode:'}</span>
+          <span className="mx-2">🔧 {isRtl ? 'وضع إدارة المتجر:' : 'Owner Mode:'}</span>
           <button 
             onClick={() => {
               setEnteredPasscode('');
@@ -309,7 +309,7 @@ export const Storefront: React.FC = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder={t.searchPlaceholder}
-                  className="w-full pl-11 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-400"
+                  className={`w-full ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 placeholder:text-slate-400`}
                 />
               </div>
             </div>
@@ -417,7 +417,7 @@ export const Storefront: React.FC = () => {
                     )}
 
                     {/* Price float */}
-                    <div className="absolute bottom-4 right-4 bg-slate-950 text-white px-4 py-2 rounded-2xl text-sm font-black shadow-xl">
+                    <div className={`absolute bottom-4 ${isRtl ? 'left-4' : 'right-4'} bg-slate-950 text-white px-4 py-2 rounded-2xl text-sm font-black shadow-xl`}>
                       {settings.currencySymbol}{prod.price.toFixed(2)}
                     </div>
                   </div>

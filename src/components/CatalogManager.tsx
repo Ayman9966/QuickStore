@@ -94,21 +94,23 @@ export const CatalogManager: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const isRtl = settings.language === 'ar';
+
   return (
-    <div className="space-y-6" id="catalog-manager-container">
+    <div className="space-y-6" id="catalog-manager-container" dir={isRtl ? 'rtl' : 'ltr'} style={{ direction: isRtl ? 'rtl' : 'ltr' }}>
       {/* Search, Filter & Actions Top Bar */}
       <div className="bg-white border border-slate-200/60 rounded-[24px] p-6 shadow-soft flex flex-col lg:flex-row items-center justify-between gap-6">
         {/* Search Input */}
         <div className="relative w-full lg:max-w-md group">
           <div className="absolute inset-0 bg-slate-900/5 rounded-2xl blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity" />
           <div className="relative flex items-center">
-            <Search className="w-4 h-4 text-slate-400 absolute left-4 group-focus-within:text-slate-900 transition-colors" />
+            <Search className={`w-4 h-4 text-slate-400 absolute ${isRtl ? 'right-4' : 'left-4'} group-focus-within:text-slate-900 transition-colors`} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t.searchPlaceholder}
-              className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-wider focus:outline-none focus:border-slate-900 transition-all text-slate-900 placeholder:text-slate-400"
+              className={`w-full ${isRtl ? 'pr-12 pl-4' : 'pl-12 pr-4'} py-4 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-black uppercase tracking-wider focus:outline-none focus:border-slate-900 transition-all text-slate-900 placeholder:text-slate-400`}
             />
           </div>
         </div>
@@ -178,7 +180,7 @@ export const CatalogManager: React.FC = () => {
                   )}
 
                   {/* Category Pill Tag */}
-                  <div className="absolute top-3 left-3 flex items-center gap-1 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm text-[10px] font-bold text-slate-700">
+                  <div className={`absolute top-3 ${isRtl ? 'right-3' : 'left-3'} flex items-center gap-1 bg-white/90 backdrop-blur-sm border border-slate-200 px-2.5 py-1 rounded-full shadow-sm text-[10px] font-bold text-slate-700`}>
                     <Tag className="w-3 h-3 text-amber-500" />
                     <span>{prod.category}</span>
                   </div>
@@ -244,7 +246,7 @@ export const CatalogManager: React.FC = () => {
       {/* Floating Modal Overlay Form for Add / Edit */}
       {isFormOpen && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden animate-scaleIn">
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-scaleIn my-auto">
             {/* Header */}
             <div className="px-6 py-4.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
               <h4 className="font-bold text-slate-900 text-sm sm:text-base">

@@ -47,8 +47,10 @@ export const QrCodeShare: React.FC = () => {
     }
   };
 
+  const isRtl = settings.language === 'ar';
+
   return (
-    <div className="space-y-6" id="qrcode-share-container">
+    <div className="space-y-6" id="qrcode-share-container" dir={isRtl ? 'rtl' : 'ltr'} style={{ direction: isRtl ? 'rtl' : 'ltr' }}>
       {/* Link Sharing Panel */}
       <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-sm">
         <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">

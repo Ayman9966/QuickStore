@@ -53,8 +53,10 @@ export const StoreSettingsForm: React.FC = () => {
     }, 3000);
   };
 
+  const isRtl = settings.language === 'ar';
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-8" id="settings-form">
+    <form onSubmit={handleSubmit} className="space-y-8" id="settings-form" dir={isRtl ? 'rtl' : 'ltr'} style={{ direction: isRtl ? 'rtl' : 'ltr' }}>
       <div className="bg-white border border-slate-200/60 rounded-[32px] p-8 shadow-soft">
         <div className="flex items-center justify-between mb-10 pb-6 border-b border-slate-100">
           <div>
@@ -115,7 +117,7 @@ export const StoreSettingsForm: React.FC = () => {
                     className="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-sm font-bold transition-all text-slate-900"
                     placeholder="e.g. +1234567890"
                   />
-                  <HelpCircle className="w-4 h-4 text-slate-300 absolute right-4 top-1/2 -translate-y-1/2" />
+                  <HelpCircle className={`w-4 h-4 text-slate-300 absolute ${isRtl ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2`} />
                 </div>
                 <p className="text-[10px] text-slate-400 font-medium mt-2 leading-relaxed">
                   {t.waNumberHelp}
@@ -231,9 +233,9 @@ export const StoreSettingsForm: React.FC = () => {
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
                   required
-                  className="w-full pl-14 pr-4 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-xs font-mono font-black transition-all text-slate-900 uppercase"
+                  className={`w-full ${isRtl ? 'pr-14 pl-4' : 'pl-14 pr-4'} py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-900/5 focus:border-slate-900 text-xs font-mono font-black transition-all text-slate-900 uppercase`}
                 />
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg border border-slate-200 shadow-sm" style={{ backgroundColor: primaryColor }} />
+                <div className={`absolute ${isRtl ? 'right-4' : 'left-4'} top-1/2 -translate-y-1/2 w-6 h-6 rounded-lg border border-slate-200 shadow-sm`} style={{ backgroundColor: primaryColor }} />
               </div>
             </div>
 
