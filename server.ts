@@ -29,6 +29,27 @@ if (!getApps().length) {
 
 const firestoreDb = getFirestore(undefined, firebaseConfig.firestoreDatabaseId || undefined);
 
+const STORES_FILE = path.join(process.cwd(), "stores.json");
+
+function getLocalStores(): any[] {
+  try {
+    if (fs.existsSync(STORES_FILE)) {
+      return JSON.parse(fs.readFileSync(STORES_FILE, "utf8"));
+    }
+  } catch (e) {
+    console.error("Error reading stores.json:", e);
+  }
+  return [];
+}
+
+function saveLocalStores(stores: any[]) {
+  try {
+    fs.writeFileSync(STORES_FILE, JSON.stringify(stores, null, 2), "utf8");
+  } catch (e) {
+    console.error("Error writing stores.json:", e);
+  }
+}
+
 const PORT = 3000;
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "7573867584:AAE4B4kDxPkTCCk85X7SeW9UyHim8DNuSkA";
@@ -86,9 +107,64 @@ async function startServer() {
 
       const trimmedUsername = username.trim().toLowerCase();
       
-      const querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
-      if (!querySnapshot.empty) {
-        return res.status(400).json({ error: "Username is already taken" });
+      let querySnapshot;
+      try {
+        querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
+        if (!querySnapshot.empty) {
+          return res.status(400).json({ error: "Username is already taken" });
+        }
+      } catch (fbErr: any) {
+        console.warn("Firestore query error in register, using local stores.json:", fbErr.message);
+        const localStores = getLocalStores();
+        const existing = localStores.find(s => s.username === trimmedUsername);
+        if (existing) {
+          return res.status(400).json({ error: "Username is already taken" });
+        }
+        const storeId = `store-${Math.floor(100000 + Math.random() * 900000)}`;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newStore = {
+          storeId,
+          username: trimmedUsername,
+          password: hashedPassword,
+          storeName: storeName || "Unnamed Store",
+          whatsappNumber: whatsappNumber || "",
+          businessType: businessType || "retail",
+          language: language || "en",
+          isSubscribed: false,
+          subscriptionEndDate: null,
+          registeredAt: new Date().toISOString(),
+          lastActiveAt: new Date().toISOString(),
+          settings: {
+            storeId,
+            storeName: storeName || "Unnamed Store",
+            logoUrl: "",
+            primaryColor: "#f59e0b",
+            currencySymbol: "$",
+            whatsappNumber: whatsappNumber || "",
+            businessType: businessType || "retail",
+            language: language || "en",
+            viewMode: "cards",
+            isSubscribed: false,
+            adminPasscode: "1234"
+          },
+          products: []
+        };
+        localStores.push(newStore);
+        saveLocalStores(localStores);
+
+        try {
+          const messageText = `🆕 *حساب تاجر جديد سجّل في كويك ستور!*
+• *اسم المستخدم:* ${trimmedUsername}
+• *اسم المتجر:* ${storeName}
+• *معرّف المتجر:* \`${storeId}\``;
+          await sendTelegramMessage(TELEGRAM_CHAT_ID, messageText);
+        } catch(e) {}
+
+        return res.json({
+          success: true,
+          storeId,
+          store: newStore
+        });
       }
 
       const storeId = `store-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -122,9 +198,18 @@ async function startServer() {
         products: []
       };
 
-      await firestoreDb.collection("stores").doc(storeId).set(newStore);
+      try {
+        await firestoreDb.collection("stores").doc(storeId).set(newStore);
+      } catch (e) {
+        console.warn("Firestore set failed, stored locally:", e);
+      }
 
-      const messageText = `🆕 *حساب تاجر جديد سجّل في كويك ستور!*
+      const localStores = getLocalStores();
+      localStores.push(newStore);
+      saveLocalStores(localStores);
+
+      try {
+        const messageText = `🆕 *حساب تاجر جديد سجّل في كويك ستور!*
 • *اسم المستخدم:* ${trimmedUsername}
 • *اسم المتجر:* ${storeName}
 • *معرّف المتجر:* \`${storeId}\`
@@ -135,8 +220,8 @@ async function startServer() {
 
 💡 _لتفعيل اشتراك هذا المتجر، أرسل:_
 \`/activate ${storeId} 30\``;
-      
-      await sendTelegramMessage(TELEGRAM_CHAT_ID, messageText);
+        await sendTelegramMessage(TELEGRAM_CHAT_ID, messageText);
+      } catch(e) {}
 
       res.json({
         success: true,
@@ -157,20 +242,30 @@ async function startServer() {
       }
 
       const trimmedUsername = username.trim().toLowerCase();
-      const querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
       
-      if (querySnapshot.empty) {
-        return res.status(401).json({ error: "Invalid username or password" });
+      let store: any = null;
+      try {
+        const querySnapshot = await firestoreDb.collection("stores").where("username", "==", trimmedUsername).get();
+        if (!querySnapshot.empty) {
+          const storeDoc = querySnapshot.docs[0];
+          store = storeDoc.data();
+        }
+      } catch (fbErr: any) {
+        console.warn("Firestore error in login query, checking local stores.json:", fbErr.message);
       }
 
-      const storeDoc = querySnapshot.docs[0];
-      const store = storeDoc.data();
+      if (!store) {
+        const localStores = getLocalStores();
+        store = localStores.find(s => s.username === trimmedUsername);
+      }
+
+      if (!store) {
+        return res.status(401).json({ error: "Invalid username or password" });
+      }
 
       if (!(await bcrypt.compare(password, store.password || ""))) {
         return res.status(401).json({ error: "Invalid username or password" });
       }
-
-      await storeDoc.ref.update({ lastActiveAt: new Date().toISOString() });
 
       res.json({
         success: true,
@@ -191,28 +286,50 @@ async function startServer() {
         return res.status(400).json({ error: "Missing storeId" });
       }
 
-      const storeRef = firestoreDb.collection("stores").doc(storeId);
-      const docSnap = await storeRef.get();
+      let store: any = null;
+      try {
+        const storeRef = firestoreDb.collection("stores").doc(storeId);
+        const docSnap = await storeRef.get();
+        if (docSnap.exists) {
+          store = docSnap.data()!;
+          const updateData: any = { lastActiveAt: new Date().toISOString() };
+          if (settings) {
+            updateData.settings = settings;
+            updateData.storeName = settings.storeName || store.storeName;
+            updateData.whatsappNumber = settings.whatsappNumber || store.whatsappNumber;
+            updateData.businessType = settings.businessType || store.businessType;
+            updateData.language = settings.language || store.language;
+          }
+          if (products) {
+            updateData.products = products;
+          }
+          await storeRef.update(updateData);
+        }
+      } catch (fbErr: any) {
+        console.warn("Firestore update failed, updating locally:", fbErr.message);
+      }
 
-      if (!docSnap.exists) {
+      const localStores = getLocalStores();
+      let idx = localStores.findIndex(s => s.storeId === storeId);
+      if (idx !== -1) {
+        if (settings) {
+          localStores[idx].settings = settings;
+          localStores[idx].storeName = settings.storeName || localStores[idx].storeName;
+          localStores[idx].whatsappNumber = settings.whatsappNumber || localStores[idx].whatsappNumber;
+          localStores[idx].businessType = settings.businessType || localStores[idx].businessType;
+          localStores[idx].language = settings.language || localStores[idx].language;
+        }
+        if (products) {
+          localStores[idx].products = products;
+        }
+        localStores[idx].lastActiveAt = new Date().toISOString();
+        saveLocalStores(localStores);
+        store = localStores[idx];
+      }
+
+      if (!store) {
         return res.status(404).json({ error: "Store not found" });
       }
-
-      const store = docSnap.data()!;
-      const updateData: any = { lastActiveAt: new Date().toISOString() };
-      
-      if (settings) {
-        updateData.settings = settings;
-        updateData.storeName = settings.storeName || store.storeName;
-        updateData.whatsappNumber = settings.whatsappNumber || store.whatsappNumber;
-        updateData.businessType = settings.businessType || store.businessType;
-        updateData.language = settings.language || store.language;
-      }
-      if (products) {
-        updateData.products = products;
-      }
-      
-      await storeRef.update(updateData);
 
       res.json({
         success: true,
@@ -232,11 +349,66 @@ async function startServer() {
         return res.status(400).json({ error: "Missing storeId" });
       }
 
-      const storeRef = firestoreDb.collection("stores").doc(storeId);
-      const docSnap = await storeRef.get();
-      const isNew = !docSnap.exists;
+      let storeData: any = null;
+      try {
+        const storeRef = firestoreDb.collection("stores").doc(storeId);
+        const docSnap = await storeRef.get();
+        if (docSnap.exists) {
+          const store = docSnap.data()!;
+          await storeRef.update({
+            storeName: storeName || store.storeName,
+            whatsappNumber: whatsappNumber || store.whatsappNumber,
+            businessType: businessType || store.businessType,
+            language: language || store.language,
+            lastActiveAt: new Date().toISOString()
+          });
+        } else {
+          const newStore = {
+            storeId,
+            username: `user_${storeId}`,
+            password: 'password',
+            storeName: storeName || "Unnamed Store",
+            whatsappNumber: whatsappNumber || "",
+            businessType: businessType || "food",
+            language: language || "ar",
+            isSubscribed: false,
+            subscriptionEndDate: null,
+            registeredAt: new Date().toISOString(),
+            lastActiveAt: new Date().toISOString(),
+            settings: {
+              storeId,
+              storeName: storeName || "Unnamed Store",
+              logoUrl: "",
+              primaryColor: "#f59e0b",
+              currencySymbol: "$",
+              whatsappNumber: whatsappNumber || "",
+              businessType: businessType || "food",
+              language: language || "ar",
+              viewMode: "cards",
+              isSubscribed: false,
+              adminPasscode: "1234"
+            },
+            products: []
+          };
+          await storeRef.set(newStore);
+        }
+        const updatedSnap = await storeRef.get();
+        storeData = updatedSnap.data();
+      } catch (fbErr: any) {
+        console.warn("Firestore register failed, using local stores.json:", fbErr.message);
+      }
 
-      if (isNew) {
+      const localStores = getLocalStores();
+      let idx = localStores.findIndex(s => s.storeId === storeId);
+      if (idx !== -1) {
+        localStores[idx].storeName = storeName || localStores[idx].storeName;
+        localStores[idx].whatsappNumber = whatsappNumber || localStores[idx].whatsappNumber;
+        localStores[idx].businessType = businessType || localStores[idx].businessType;
+        localStores[idx].language = language || localStores[idx].language;
+        localStores[idx].lastActiveAt = new Date().toISOString();
+        saveLocalStores(localStores);
+        storeData = storeData || localStores[idx];
+      } else if (!storeData) {
         const newStore = {
           storeId,
           username: `user_${storeId}`,
@@ -264,33 +436,10 @@ async function startServer() {
           },
           products: []
         };
-        await storeRef.set(newStore);
-
-        const messageText = `🆕 *مستخدم جديد سجّل في كويك ستور!*
-• *اسم المتجر:* ${storeName}
-• *معرّف المتجر:* \`${storeId}\`
-• *رقم الواتساب:* ${whatsappNumber}
-• *اللغة:* ${language.toUpperCase()}
-• *نوع النشاط:* ${businessType === "food" ? "مطعم/مقهى 🍔" : "تجزئة 🛍️"}
-• *تاريخ التسجيل:* ${new Date().toLocaleString("ar-EG")}
-
-💡 _لتفعيل اشتراك هذا المتجر، أرسل:_
-\`/activate ${storeId} 30\``;
-        
-        await sendTelegramMessage(TELEGRAM_CHAT_ID, messageText);
-      } else {
-        const store = docSnap.data()!;
-        await storeRef.update({
-          storeName: storeName || store.storeName,
-          whatsappNumber: whatsappNumber || store.whatsappNumber,
-          businessType: businessType || store.businessType,
-          language: language || store.language,
-          lastActiveAt: new Date().toISOString()
-        });
+        localStores.push(newStore);
+        saveLocalStores(localStores);
+        storeData = newStore;
       }
-
-      const updatedSnap = await storeRef.get();
-      const storeData = updatedSnap.data();
 
       res.json({
         success: true,
@@ -310,34 +459,37 @@ async function startServer() {
         return res.status(400).json({ error: "Missing or invalid storeId" });
       }
 
-      const storeRef = firestoreDb.collection("stores").doc(storeId);
-      const docSnap = await storeRef.get();
+      let store: any = null;
+      try {
+        const storeRef = firestoreDb.collection("stores").doc(storeId);
+        const docSnap = await storeRef.get();
+        if (docSnap.exists) {
+          store = docSnap.data()!;
+        }
+      } catch (fbErr: any) {
+        console.warn("Firestore status failed, checking local stores.json:", fbErr.message);
+      }
 
-      if (!docSnap.exists) {
+      if (!store) {
+        const localStores = getLocalStores();
+        store = localStores.find(s => s.storeId === storeId);
+      }
+
+      if (!store) {
         return res.json({ isSubscribed: false });
       }
 
-      const store = docSnap.data()!;
       let isSubscribed = store.isSubscribed;
       if (store.isSubscribed && store.subscriptionEndDate) {
         const expiry = new Date(store.subscriptionEndDate);
         if (expiry < new Date()) {
           isSubscribed = false;
-          await storeRef.update({ isSubscribed: false });
-
-          sendTelegramMessage(
-            TELEGRAM_CHAT_ID,
-            `⚠️ *انتهاء اشتراك متجر!*
-• *المتجر:* ${store.storeName}
-• *المعرف:* \`${store.storeId}\`
-• انتهت صلاحية الاشتراك تلقائياً.`
-          );
         }
       }
 
       res.json({
         isSubscribed,
-        subscriptionEndDate: store.subscriptionEndDate,
+        subscriptionEndDate: store.subscriptionEndDate || null,
       });
     } catch (error: any) {
       console.error("Status endpoint error:", error);
