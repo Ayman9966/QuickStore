@@ -833,24 +833,12 @@ export const Storefront: React.FC = () => {
                 </a>
               </div>
 
-              <div className="flex gap-2.5">
+              <div className="flex">
                 <button
                   onClick={() => setUpgradeOpen(false)}
-                  className="flex-1 font-bold text-xs py-3.5 rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer text-slate-600"
+                  className="w-full font-bold text-xs py-3.5 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer"
                 >
-                  {isRtl ? 'إلغاء' : 'Cancel'}
-                </button>
-                <button
-                  onClick={() => {
-                    updateSettings({ isSubscribed: true });
-                    setUpgradeOpen(false);
-                    setActiveToast(isRtl ? '🎉 تم تفعيل الخطة الاحترافية وإلغاء كافة القيود بنجاح!' : '🎉 Pro Plan activated successfully! All limits unlocked.');
-                    setTimeout(() => setActiveToast(null), 3000);
-                  }}
-                  className="flex-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-black text-xs py-3.5 rounded-2xl shadow-lg hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>{isRtl ? 'اشترك الآن' : 'Subscribe Now'}</span>
+                  {isRtl ? 'إغلاق' : 'Close'}
                 </button>
               </div>
             </motion.div>

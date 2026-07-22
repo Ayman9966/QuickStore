@@ -254,10 +254,13 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
             <button
-              onClick={() => updateSettings({ isSubscribed: true })}
-              className="bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg hover:bg-slate-800 transition-all active:scale-95 cursor-pointer"
+              onClick={() => {
+                window.open(`https://t.me/${botUsername}?start=${settings.storeId || ''}`, '_blank');
+              }}
+              className="bg-slate-900 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg hover:bg-slate-800 transition-all active:scale-95 cursor-pointer flex items-center gap-2"
             >
-              Upgrade to Pro — $15/mo
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>{isRtl ? 'طلب تفعيل الاشتراك عبر تيليجرام (مدير النظام)' : 'Request Activation via Telegram (Super Admin)'}</span>
             </button>
           </div>
         </div>
